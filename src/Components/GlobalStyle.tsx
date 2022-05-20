@@ -14,7 +14,7 @@ const GlobalStyle = createGlobalStyle`
     input {
         padding: 0 6px;
         outline:none;
-        border: solid 3px ${(props) => props.theme.colors.borderColor};
+        border: solid 1px ${(props) => props.theme.colors.borderColor};
         :focus {
             border-color: ${(props) => props.theme.colors.focusedBorderColor};
         }
@@ -25,6 +25,10 @@ const GlobalStyle = createGlobalStyle`
     }
     a {
         text-decoration: none;
+    }
+    button {
+        border: none;
+        cursor: pointer;
     }
 `;
 

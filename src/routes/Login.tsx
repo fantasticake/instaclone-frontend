@@ -5,7 +5,7 @@ import styled from "styled-components";
 import FormButton from "../Components/form/FormButton";
 import FormInput from "../Components/form/FormInput";
 import Logo from "../Components/Logo";
-import { tokenVar } from "../variables";
+import { setLogin } from "../variables";
 import { login, loginVariables } from "../__generated__/login";
 
 const Container = styled.div`
@@ -23,7 +23,7 @@ const LoginBox = styled.div`
   align-items: center;
   padding: 20px;
   width: 280px;
-  border: solid 4px ${(props) => props.theme.colors.borderColor};
+  border: solid 3px ${(props) => props.theme.colors.borderColor};
   border-radius: 6px;
   margin-bottom: 12px;
 `;
@@ -44,7 +44,7 @@ const Form = styled.form`
 const SubBox = styled.div`
   padding: 20px;
   width: 280px;
-  border: solid 4px ${(props) => props.theme.colors.borderColor};
+  border: solid 3px ${(props) => props.theme.colors.borderColor};
   text-align: center;
   font-size: 14px;
 `;
@@ -87,8 +87,7 @@ const Login = () => {
         variables: { username, password },
       });
       if (data?.login.token) {
-        window.localStorage.setItem("token", data.login.token);
-        tokenVar(data.login.token);
+        setLogin(data.login.token);
       }
     }
   };

@@ -7,8 +7,8 @@ export const darkTheme: DefaultTheme = {
     ...shared,
     backgroundColor: "#2e2f37",
     textColor: "white",
-    borderColor: "rgba(255, 255, 255, 0.7)",
-    focusedBorderColor: "rgba(255, 255, 255, 0.9)",
+    borderColor: "rgba(255, 255, 255, 0.5)",
+    focusedBorderColor: "rgba(255, 255, 255, 0.7)",
     faintLineColor: "rgba(255, 255, 255, 0.1)",
   },
 };

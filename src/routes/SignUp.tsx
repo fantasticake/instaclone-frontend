@@ -22,7 +22,7 @@ const SignupBox = styled.div`
   align-items: center;
   padding: 20px;
   width: 280px;
-  border: solid 4px ${(props) => props.theme.colors.borderColor};
+  border: solid 3px ${(props) => props.theme.colors.borderColor};
   border-radius: 6px;
   margin-bottom: 12px;
 `;
@@ -50,7 +50,7 @@ const Form = styled.form`
 const SubBox = styled.div`
   padding: 20px;
   width: 280px;
-  border: solid 4px ${(props) => props.theme.colors.borderColor};
+  border: solid 3px ${(props) => props.theme.colors.borderColor};
   text-align: center;
   font-size: 14px;
 `;
