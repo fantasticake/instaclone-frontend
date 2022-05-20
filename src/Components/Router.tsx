@@ -9,10 +9,16 @@ const Router = () => {
   const token = useReactiveVar(tokenVar);
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={token ? <Home /> : <Login />}></Route>
-        <Route path="signup" element={<SignUp />}></Route>
-      </Routes>
+      {token ? (
+        <Routes>
+          <Route path="/" element={<Home />}></Route>
+        </Routes>
+      ) : (
+        <Routes>
+          <Route path="/" element={<Login />}></Route>
+          <Route path="signup" element={<SignUp />}></Route>
+        </Routes>
+      )}
     </BrowserRouter>
   );
 };

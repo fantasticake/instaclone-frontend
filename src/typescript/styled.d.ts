@@ -8,6 +8,7 @@ declare module "styled-components" {
       textColor: string;
       borderColor: string;
       focusedBorderColor: string;
+      faintLineColor: string;
     };
   }
 }

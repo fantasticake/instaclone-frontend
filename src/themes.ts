@@ -9,5 +9,17 @@ export const darkTheme: DefaultTheme = {
     textColor: "white",
     borderColor: "rgba(255, 255, 255, 0.7)",
     focusedBorderColor: "rgba(255, 255, 255, 0.9)",
+    faintLineColor: "rgba(255, 255, 255, 0.1)",
+  },
+};
+
+export const lightTheme: DefaultTheme = {
+  colors: {
+    ...shared,
+    backgroundColor: "white",
+    textColor: "black",
+    borderColor: "rgba(0, 0, 0, 0.7)",
+    focusedBorderColor: "rgba(0, 0, 0, 0.9)",
+    faintLineColor: "rgba(0, 0, 0, 0.1)",
   },
 };

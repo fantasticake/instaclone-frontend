@@ -9,7 +9,8 @@ const FormButton = styled.button`
   border-radius: 6px;
   font-weight: 600;
   font-size: 14px;
-  cursor: pointer;
+  color: white;
+  cursor: ${(props) => (props.disabled ? "default" : "pointer")};
   ${(props) => (props.disabled ? "opacity: 0.5" : null)}
 `;
 

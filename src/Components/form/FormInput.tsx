@@ -7,8 +7,6 @@ const FormInput = styled.input`
   margin-bottom: 6px;
   ::placeholder {
     font-size: 12px;
-    color: ${(props) => props.theme.colors.textColor};
-    opacity: 0.5;
   }
 `;
 

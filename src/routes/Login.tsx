@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import FormButton from "../Components/form/FormButton";
 import FormInput from "../Components/form/FormInput";
-import logo from "../images/logo.png";
+import Logo from "../Components/Logo";
 import { tokenVar } from "../variables";
 import { login, loginVariables } from "../__generated__/login";
 
@@ -28,10 +28,9 @@ const LoginBox = styled.div`
   margin-bottom: 12px;
 `;
 
-const Logo = styled.img`
-  width: 180px;
-  height: 70px;
-  margin: 20px 0;
+const LogoBox = styled.div`
+  width: 190px;
+  margin: 26px 0;
 `;
 
 const Form = styled.form`
@@ -97,7 +96,9 @@ const Login = () => {
   return (
     <Container>
       <LoginBox>
-        <Logo src={logo} alt="Logo" />
+        <LogoBox>
+          <Logo />
+        </LogoBox>
         <Form onSubmit={handleSubmit(onSubmit)}>
           <FormInput
             defaultValue={state?.username || ""}

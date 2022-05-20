@@ -12,12 +12,16 @@ const GlobalStyle = createGlobalStyle`
         color: ${(props) => props.theme.colors.textColor};
     }
     input {
+        padding: 0 6px;
         outline:none;
         border: solid 3px ${(props) => props.theme.colors.borderColor};
         :focus {
             border-color: ${(props) => props.theme.colors.focusedBorderColor};
         }
-        padding: 0 6px;
+        ::placeholder {
+            color: ${(props) => props.theme.colors.textColor};
+            opacity: 0.5;
+        }
     }
     a {
         text-decoration: none;

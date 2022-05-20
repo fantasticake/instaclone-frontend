@@ -4,8 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import FormButton from "../Components/form/FormButton";
 import FormInput from "../Components/form/FormInput";
-import logo from "../images/logo.png";
 import { signUp, signUpVariables } from "../__generated__/signUp";
+import Logo from "../Components/Logo";
 
 const Container = styled.div`
   display: flex;
@@ -27,10 +27,9 @@ const SignupBox = styled.div`
   margin-bottom: 12px;
 `;
 
-const Logo = styled.img`
-  width: 180px;
-  height: 70px;
-  margin: 20px 0;
+const LogoBox = styled.div`
+  width: 190px;
+  margin: 26px 0;
 `;
 
 const MainText = styled.span`
@@ -108,7 +107,9 @@ const SignUp = () => {
   return (
     <Container>
       <SignupBox>
-        <Logo src={logo} alt="Logo" />
+        <LogoBox>
+          <Logo />
+        </LogoBox>
         <MainText>Sign up to see photos and videos from your friends.</MainText>
         <Form onSubmit={handleSubmit(onSubmit)}>
           <FormInput
