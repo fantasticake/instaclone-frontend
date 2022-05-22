@@ -1,13 +1,10 @@
-import {
-  faMoon,
-  faSun,
-  faUserCircle,
-} from "@fortawesome/free-regular-svg-icons";
+import { faMoon, faSun } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import useMe from "../hooks/useMe";
 import { themeVar, toggleTheme } from "../variables";
+import Avatar from "./Avatar";
 import Logo from "./Logo";
 
 const Container = styled.div`
@@ -19,11 +16,12 @@ const Container = styled.div`
   align-items: center;
   border-bottom: solid 1px ${(props) => props.theme.colors.faintLineColor};
   height: 60px;
-  padding: 0 120px;
+  width: 100%;
 `;
 
 const Column = styled.div`
-  width: 33%;
+  width: 300px;
+  max-width: 30%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -31,13 +29,13 @@ const Column = styled.div`
 
 const LogoBox = styled(Link)`
   align-self: flex-start;
-  height: 40px;
+  width: 110px;
   margin-top: 10px;
 `;
 
 const SearchBox = styled.input`
   height: 30px;
-  width: 260px;
+  width: 220px;
   padding: 0 14px;
   border-radius: 8px;
   font-family: FontAwesome;
@@ -72,18 +70,13 @@ const ProfileBtn = styled(Link)`
   width: 30px;
   height: 30px;
   border-radius: 15px;
+  font-size: 30px;
   overflow: hidden;
-`;
-
-const Avatar = styled.img`
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
 `;
 
 const Header = () => {
   const data = useMe();
-  return (
+  return data ? (
     <Container>
       <Column>
         <LogoBox to={"/"}>
@@ -99,16 +92,12 @@ const Header = () => {
             <FontAwesomeIcon icon={themeVar() == "light" ? faMoon : faSun} />
           </ThemeBtn>
           <ProfileBtn to={`/users/${data?.seeMe?.id}`}>
-            {data?.seeMe?.avatar ? (
-              <Avatar src={data.seeMe.avatar} />
-            ) : (
-              <FontAwesomeIcon icon={faUserCircle} />
-            )}
+            <Avatar avatar={data?.seeMe?.avatar} />
           </ProfileBtn>
         </Buttons>
       </Column>
     </Container>
-  );
+  ) : null;
 };
 
 export default Header;

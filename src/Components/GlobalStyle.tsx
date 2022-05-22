@@ -11,6 +11,11 @@ const GlobalStyle = createGlobalStyle`
         background-color: ${(props) => props.theme.colors.backgroundColor};
         color: ${(props) => props.theme.colors.textColor};
     }
+    span {
+        background-color:transparent;
+    }
+    input,button,div{
+    }
     input {
         padding: 0 6px;
         outline:none;

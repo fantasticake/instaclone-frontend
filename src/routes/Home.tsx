@@ -20,6 +20,7 @@ const SEEFEED_QUERY = gql`
       id
       url
       caption
+      isLiked
       totalLikes
       totalComments
       createdAt
@@ -27,6 +28,14 @@ const SEEFEED_QUERY = gql`
         id
         username
         avatar
+      }
+      comments {
+        id
+        payload
+        user {
+          id
+          username
+        }
       }
     }
   }

@@ -1,27 +1,32 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
+import {
+  ApolloCache,
+  DefaultContext,
+  gql,
+  MutationUpdaterFunction,
+  useMutation,
+} from "@apollo/client";
 import {
   faComment,
-  faHeart,
   faPaperPlane,
-  faUser,
+  faHeart,
 } from "@fortawesome/free-regular-svg-icons";
+import { faHeart as faSolidHeart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { SubmitHandler, useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import useMe from "../hooks/useMe";
-import {
-  createComment,
-  createCommentVariables,
-} from "../__generated__/createComment";
-import {
-  seeComments,
-  seeCommentsVariables,
-} from "../__generated__/seeComments";
+import { likePhoto, likePhotoVariables } from "../__generated__/likePhoto";
 import { seeFeed_seeFeed } from "../__generated__/seeFeed";
+import {
+  unlikePhoto,
+  unlikePhotoVariables,
+} from "../__generated__/unlikePhoto";
+import Avatar from "./Avatar";
+import Comment from "./Comment";
+import CommentForm from "./CommentForm";
 
-const FeedContainer = styled.div`
-  width: 500px;
+const Container = styled.div`
+  width: 400px;
+  max-width: 90%;
   border: solid 3px ${(props) => props.theme.colors.faintLineColor};
   border-radius: 4px;
   font-size: 16px;
@@ -34,12 +39,13 @@ const UserBox = styled.div`
   height: 50px;
 `;
 
-const Avatar = styled.img`
+const AvatarContainer = styled.div`
   height: 26px;
   width: 26px;
   border-radius: 15px;
-  object-fit: cover;
+  font-size: 26px;
   margin-right: 18px;
+  overflow: hidden;
 `;
 
 const Username = styled.span`
@@ -61,7 +67,12 @@ const ControlBox = styled.div`
   }
 `;
 
-const LikeBtn = styled.button``;
+const LikeBtn = styled.button<{ isLiked: boolean }>`
+  svg path {
+    color: ${(props) =>
+      props.isLiked ? "tomato" : props.theme.colors.textColor};
+  }
+`;
 
 const CommentBtn = styled.button``;
 
@@ -83,17 +94,6 @@ const TotalComments = styled.span`
   margin-bottom: 8px;
 `;
 
-const CommentContainer = styled.div`
-  margin-bottom: 8px;
-`;
-
-const CommentUsername = styled.span`
-  font-weight: 500;
-  margin-right: 10px;
-`;
-
-const CommentPayload = styled.span``;
-
 const CreatedAt = styled.span`
   display: block;
   padding: 0 14px;
@@ -101,148 +101,106 @@ const CreatedAt = styled.span`
   margin-bottom: 24px;
 `;
 
-const CommentForm = styled.form`
-  display: flex;
-  align-items: center;
-  padding: 0 8px;
-  height: 46px;
-  border-top: solid 1px ${(props) => props.theme.colors.faintLineColor};
-`;
-
-const CommentInput = styled.input`
-  border: none;
-  height: 100%;
-  width: 100%;
-`;
-
-const CommentSubmit = styled.button`
-  color: ${(props) => props.theme.colors.blue};
-  ${(props) => (props.disabled ? "opacity: 0.4;" : null)}
-  ${(props) => (props.disabled ? "cursor: default;" : null)}
-`;
-
-const SEE_COMMENTS_QUERY = gql`
-  query seeComments($photoId: Int!) {
-    seeComments(photoId: $photoId) {
-      id
-      payload
-      user {
-        id
-        username
-      }
-      photo {
-        id
-      }
-    }
-  }
-`;
-
-const CREATE_COMMENT_MUTATION = gql`
-  mutation createComment($photoId: Int!, $payload: String!) {
-    createComment(photoId: $photoId, payload: $payload) {
+const LIKE_PHOTO_MUTATION = gql`
+  mutation likePhoto($photoId: Int!) {
+    likePhoto(photoId: $photoId) {
       ok
-      id
       error
     }
   }
 `;
 
-interface Inputs {
-  payload: string;
-}
+const UNLIKE_PHOTO_MUTATION = gql`
+  mutation unlikePhoto($photoId: Int!) {
+    unlikePhoto(photoId: $photoId) {
+      ok
+      error
+    }
+  }
+`;
 
 const Feed = (photo: seeFeed_seeFeed) => {
-  const meData = useMe();
-
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { isValid },
-  } = useForm<Inputs>({ mode: "onChange" });
-
-  const { data } = useQuery<seeComments, seeCommentsVariables>(
-    SEE_COMMENTS_QUERY,
-    { variables: { photoId: photo.id } }
-  );
-
-  const [createCommentMutation, { loading }] = useMutation<
-    createComment,
-    createCommentVariables
-  >(CREATE_COMMENT_MUTATION);
-
-  const onValid: SubmitHandler<Inputs> = async ({ payload }) => {
-    if (!loading) {
-      setValue("payload", "");
-      await createCommentMutation({
-        variables: { photoId: photo.id, payload },
-        update: (cache, { data }) => {
-          if (data?.createComment && meData?.seeMe) {
-            const { id: commentId } = data.createComment;
-            const newComment = {
-              __typename: "Comment",
-              id: commentId,
-              payload,
-              user: {
-                ...meData.seeMe,
-              },
-              photo: {
-                ...photo,
-              },
-            };
-            const newCommentFragment = cache.writeFragment({
-              data: newComment,
-              fragment: gql`
-                fragment NewComment on Comment {
-                  __typename
-                  id
-                  payload
-                  user {
-                    id
-                    username
-                  }
-                  photo {
-                    id
-                  }
-                }
-              `,
-            });
-            cache.modify({
-              id: "ROOT_QUERY",
-              fields: {
-                seeComments: (prev, { storeFieldName }) => {
-                  if (`seeComments({"photoId":${photo.id}})` == storeFieldName)
-                    return [...prev, newCommentFragment];
-                  return prev;
-                },
-              },
-            });
-          }
+  const updateLikeMutation: MutationUpdaterFunction<
+    likePhoto,
+    likePhotoVariables,
+    DefaultContext,
+    ApolloCache<any>
+  > = (cache, data) => {
+    cache.modify({
+      id: `Photo:${photo.id}`,
+      fields: {
+        isLiked(prev) {
+          return !prev;
         },
-      });
-    }
+        totalLikes(prev) {
+          return prev + 1;
+        },
+      },
+    });
   };
 
+  const updateUnlikeMutation: MutationUpdaterFunction<
+    unlikePhoto,
+    unlikePhotoVariables,
+    DefaultContext,
+    ApolloCache<any>
+  > = (cache, data) => {
+    cache.modify({
+      id: `Photo:${photo.id}`,
+      fields: {
+        isLiked(prev) {
+          return !prev;
+        },
+        totalLikes(prev) {
+          return prev - 1;
+        },
+      },
+    });
+  };
+
+  const [likeMutation, { loading: likeLoading }] = useMutation<
+    likePhoto,
+    likePhotoVariables
+  >(LIKE_PHOTO_MUTATION, {
+    variables: { photoId: photo.id },
+    update: updateLikeMutation,
+  });
+  const [unlikeMutation, { loading: unlikeLoading }] = useMutation<
+    unlikePhoto,
+    unlikePhotoVariables
+  >(UNLIKE_PHOTO_MUTATION, {
+    variables: { photoId: photo.id },
+    update: updateUnlikeMutation,
+  });
+  const toggleLike = async () => {
+    if (!likeLoading && !unlikeLoading) {
+      if (photo.isLiked) {
+        await unlikeMutation();
+      } else {
+        await likeMutation();
+      }
+    }
+  };
   return (
-    <FeedContainer>
+    <Container>
       <UserBox>
-        {photo.user.avatar ? (
-          <Link to={`/users/${photo.user.id}`}>
-            <Avatar src={photo.user.avatar} />
-          </Link>
-        ) : (
-          <FontAwesomeIcon icon={faUser} />
-        )}
+        <Link to={`/users/${photo.user.id}`}>
+          <AvatarContainer>
+            <Avatar avatar={photo.user.avatar} />
+          </AvatarContainer>
+        </Link>
         <Link to={`/users/${photo.user.id}`}>
           <Username>{photo.user.username}</Username>
         </Link>
       </UserBox>
-      <Link to={`/photos/${photo.id}`}>
-        <Photo src={photo.url} />
-      </Link>
+      <Photo src={photo.url} />
       <ControlBox>
-        <LikeBtn>
-          <FontAwesomeIcon icon={faHeart} />
+        <LikeBtn isLiked={photo.isLiked} onClick={toggleLike}>
+          {photo.isLiked ? (
+            <FontAwesomeIcon icon={faSolidHeart} />
+          ) : (
+            <FontAwesomeIcon icon={faHeart} />
+          )}
         </LikeBtn>
         <CommentBtn>
           <FontAwesomeIcon icon={faComment} />
@@ -253,39 +211,36 @@ const Feed = (photo: seeFeed_seeFeed) => {
       </ControlBox>
       <TotalLikes>
         {photo.totalLikes}
-        {photo.totalLikes == 1 ? " Like" : " Likes"}
+        {photo.totalLikes == 1 ? " like" : " likes"}
       </TotalLikes>
-      {data && (
-        <CommentList>
-          <CommentContainer>
-            <CommentUsername>{photo.user.username}</CommentUsername>
-            <CommentPayload>{photo.caption}</CommentPayload>
-          </CommentContainer>
+      <CommentList>
+        <Comment
+          userId={photo.user.id}
+          username={photo.user.username}
+          payload={photo.caption}
+        />
+        <Link to={`/posts/${photo.id}`}>
           <TotalComments>
             View all {photo.totalComments}
             {photo.totalComments == 1 ? " comment" : " comments"}
           </TotalComments>
-          {data.seeComments?.map((comment) => (
-            <CommentContainer key={comment?.id}>
-              <CommentUsername>{comment?.user.username}</CommentUsername>
-              <CommentPayload>{comment?.payload}</CommentPayload>
-            </CommentContainer>
-          ))}
-        </CommentList>
-      )}
+        </Link>
+        {photo.comments?.map(
+          (comment) =>
+            comment && (
+              <Comment
+                userId={comment.user.id}
+                username={comment.user.username}
+                payload={comment.payload}
+              />
+            )
+        )}
+      </CommentList>
       <CreatedAt>
         {new Date(parseInt(photo.createdAt)).toLocaleDateString()}
       </CreatedAt>
-      <CommentForm onSubmit={handleSubmit(onValid)}>
-        <CommentInput
-          {...register("payload", { required: true })}
-          placeholder="Add a comment..."
-        />
-        <CommentSubmit onClick={handleSubmit(onValid)} disabled={!isValid}>
-          Post
-        </CommentSubmit>
-      </CommentForm>
-    </FeedContainer>
+      <CommentForm photoId={photo.id} />
+    </Container>
   );
 };
 
