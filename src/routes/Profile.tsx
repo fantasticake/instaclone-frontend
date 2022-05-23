@@ -3,16 +3,27 @@ import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import Avatar from "../Components/Avatar";
 import Header from "../Components/Header";
-import Photo from "../Components/Photo";
+import PhotoGrid from "../Components/PhotoGrid";
 import useMe from "../hooks/useMe";
 import { formatNumber } from "../utils";
-import { seeProfile, seeProfileVariables } from "../__generated__/seeProfile";
+import {
+  seeProfileWithPhotos,
+  seeProfileWithPhotosVariables,
+} from "../__generated__/seeProfileWithPhotos";
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   font-size: 16px;
+`;
+
+const Content = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 920px;
+  max-width: 90%;
 `;
 
 const UserBox = styled.div`
@@ -72,19 +83,8 @@ const TotalFollowers = styled.span``;
 
 const TotalFollowing = styled.span``;
 
-const PostList = styled.div`
-  width: 920px;
-  max-width: 90%;
-  display: grid;
-  gap: 20px;
-  grid-template-columns: 1fr 1fr 1fr;
-  border-top: solid 1px ${(props) => props.theme.colors.faintLineColor};
-  padding-top: 46px;
-  margin-bottom: 10px;
-`;
-
 const SEE_PROFILE_QUERY = gql`
-  query seeProfile($userId: Int!) {
+  query seeProfileWithPhotos($userId: Int!) {
     seeProfile(userId: $userId) {
       id
       username
@@ -92,12 +92,12 @@ const SEE_PROFILE_QUERY = gql`
       totalPosts
       totalFollowing
       totalFollowers
-      photos {
-        id
-        url
-        totalLikes
-        totalComments
-      }
+    }
+    seePhotosByUser(userId: $userId) {
+      id
+      url
+      totalLikes
+      totalComments
     }
   }
 `;
@@ -105,42 +105,42 @@ const SEE_PROFILE_QUERY = gql`
 const Profile = () => {
   const meData = useMe();
   const { id } = useParams();
-  const { data } = useQuery<seeProfile, seeProfileVariables>(
-    SEE_PROFILE_QUERY,
-    { variables: { userId: parseInt(id || "0") } }
-  );
+  const { data } = useQuery<
+    seeProfileWithPhotos,
+    seeProfileWithPhotosVariables
+  >(SEE_PROFILE_QUERY, {
+    variables: { userId: parseInt(id || "0") },
+  });
   return data ? (
     <Container>
       <Header />
-      <UserBox>
-        <AvatarContainer>
-          {<Avatar avatar={data?.seeProfile?.avatar} />}
-        </AvatarContainer>
-        <InfoBox>
-          <ControlBox>
-            <Username>{data?.seeProfile?.username}</Username>
-            {meData?.seeMe?.id == id && <EditBtn>Edit Profile</EditBtn>}
-            {meData?.seeMe?.id != id && <MessageBtn>Message</MessageBtn>}
-            {meData?.seeMe?.id != id && <FollowBtn>Follow</FollowBtn>}
-          </ControlBox>
-          <TotalBox>
-            <TotalPosts>
-              {formatNumber(data?.seeProfile?.totalPosts, "post")}
-            </TotalPosts>
-            <TotalFollowers>
-              {formatNumber(data?.seeProfile?.totalFollowers, "follower")}
-            </TotalFollowers>
-            <TotalFollowing>
-              {data?.seeProfile?.totalFollowing} following
-            </TotalFollowing>
-          </TotalBox>
-        </InfoBox>
-      </UserBox>
-      <PostList>
-        {data?.seeProfile?.photos?.map(
-          (photo) => photo && <Photo key={photo.id} {...photo} />
-        )}
-      </PostList>
+      <Content>
+        <UserBox>
+          <AvatarContainer>
+            {<Avatar avatar={data?.seeProfile?.avatar} />}
+          </AvatarContainer>
+          <InfoBox>
+            <ControlBox>
+              <Username>{data?.seeProfile?.username}</Username>
+              {meData?.seeMe?.id == id && <EditBtn>Edit Profile</EditBtn>}
+              {meData?.seeMe?.id != id && <MessageBtn>Message</MessageBtn>}
+              {meData?.seeMe?.id != id && <FollowBtn>Follow</FollowBtn>}
+            </ControlBox>
+            <TotalBox>
+              <TotalPosts>
+                {formatNumber(data?.seeProfile?.totalPosts, "post")}
+              </TotalPosts>
+              <TotalFollowers>
+                {formatNumber(data?.seeProfile?.totalFollowers, "follower")}
+              </TotalFollowers>
+              <TotalFollowing>
+                {data?.seeProfile?.totalFollowing} following
+              </TotalFollowing>
+            </TotalBox>
+          </InfoBox>
+        </UserBox>
+        {data.seePhotosByUser && <PhotoGrid photos={data.seePhotosByUser} />}
+      </Content>
     </Container>
   ) : null;
 };

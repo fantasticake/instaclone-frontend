@@ -96,11 +96,18 @@ const CommentForm = ({ photoId }: { photoId: number }) => {
       cache.modify({
         id: `Photo:${photoId}`,
         fields: {
-          comments(prev) {
-            return [...prev, newCommentFragment];
-          },
           totalComments(prev) {
             return prev + 1;
+          },
+        },
+      });
+      cache.modify({
+        id: `ROOT_QUERY`,
+        fields: {
+          seeComments(prev, { storeFieldName }) {
+            if (`seeComments({"photoId":${photoId}})` == storeFieldName)
+              return [...prev, newCommentFragment];
+            return prev;
           },
         },
       });

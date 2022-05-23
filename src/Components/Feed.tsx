@@ -1,33 +1,23 @@
-import {
-  ApolloCache,
-  DefaultContext,
-  gql,
-  MutationUpdaterFunction,
-  useMutation,
-} from "@apollo/client";
-import {
-  faComment,
-  faPaperPlane,
-  faHeart,
-} from "@fortawesome/free-regular-svg-icons";
-import { faHeart as faSolidHeart } from "@fortawesome/free-solid-svg-icons";
+import { gql, useQuery } from "@apollo/client";
+import { faComment, faPaperPlane } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { likePhoto, likePhotoVariables } from "../__generated__/likePhoto";
-import { seeFeed_seeFeed } from "../__generated__/seeFeed";
+import { formatNumber } from "../utils";
 import {
-  unlikePhoto,
-  unlikePhotoVariables,
-} from "../__generated__/unlikePhoto";
+  seeComments,
+  seeCommentsVariables,
+} from "../__generated__/seeComments";
+import { seeFeed_seeFeed } from "../__generated__/seeFeed";
 import Avatar from "./Avatar";
 import Comment from "./Comment";
 import CommentForm from "./CommentForm";
+import LikeBtn from "./LikeBtn";
 
 const Container = styled.div`
   width: 400px;
   max-width: 90%;
-  border: solid 3px ${(props) => props.theme.colors.faintLineColor};
+  border: solid 2px ${(props) => props.theme.colors.faintLineColor};
   border-radius: 4px;
   font-size: 16px;
 `;
@@ -67,16 +57,15 @@ const ControlBox = styled.div`
   }
 `;
 
-const LikeBtn = styled.button<{ isLiked: boolean }>`
-  svg path {
-    color: ${(props) =>
-      props.isLiked ? "tomato" : props.theme.colors.textColor};
+const Button = styled.button`
+  :hover {
+    opacity: 0.7;
   }
 `;
 
-const CommentBtn = styled.button``;
+const CommentBtn = styled(Button)``;
 
-const DmBtn = styled.button``;
+const DmBtn = styled(Button)``;
 
 const TotalLikes = styled.span`
   padding: 0 14px;
@@ -101,86 +90,24 @@ const CreatedAt = styled.span`
   margin-bottom: 24px;
 `;
 
-const LIKE_PHOTO_MUTATION = gql`
-  mutation likePhoto($photoId: Int!) {
-    likePhoto(photoId: $photoId) {
-      ok
-      error
-    }
-  }
-`;
-
-const UNLIKE_PHOTO_MUTATION = gql`
-  mutation unlikePhoto($photoId: Int!) {
-    unlikePhoto(photoId: $photoId) {
-      ok
-      error
+const SEE_COMMENTS_QUERY = gql`
+  query seeComments($photoId: Int!) {
+    seeComments(photoId: $photoId) {
+      id
+      payload
+      user {
+        id
+        username
+      }
     }
   }
 `;
 
 const Feed = (photo: seeFeed_seeFeed) => {
-  const updateLikeMutation: MutationUpdaterFunction<
-    likePhoto,
-    likePhotoVariables,
-    DefaultContext,
-    ApolloCache<any>
-  > = (cache, data) => {
-    cache.modify({
-      id: `Photo:${photo.id}`,
-      fields: {
-        isLiked(prev) {
-          return !prev;
-        },
-        totalLikes(prev) {
-          return prev + 1;
-        },
-      },
-    });
-  };
-
-  const updateUnlikeMutation: MutationUpdaterFunction<
-    unlikePhoto,
-    unlikePhotoVariables,
-    DefaultContext,
-    ApolloCache<any>
-  > = (cache, data) => {
-    cache.modify({
-      id: `Photo:${photo.id}`,
-      fields: {
-        isLiked(prev) {
-          return !prev;
-        },
-        totalLikes(prev) {
-          return prev - 1;
-        },
-      },
-    });
-  };
-
-  const [likeMutation, { loading: likeLoading }] = useMutation<
-    likePhoto,
-    likePhotoVariables
-  >(LIKE_PHOTO_MUTATION, {
-    variables: { photoId: photo.id },
-    update: updateLikeMutation,
-  });
-  const [unlikeMutation, { loading: unlikeLoading }] = useMutation<
-    unlikePhoto,
-    unlikePhotoVariables
-  >(UNLIKE_PHOTO_MUTATION, {
-    variables: { photoId: photo.id },
-    update: updateUnlikeMutation,
-  });
-  const toggleLike = async () => {
-    if (!likeLoading && !unlikeLoading) {
-      if (photo.isLiked) {
-        await unlikeMutation();
-      } else {
-        await likeMutation();
-      }
-    }
-  };
+  const { data } = useQuery<seeComments, seeCommentsVariables>(
+    SEE_COMMENTS_QUERY,
+    { variables: { photoId: photo.id } }
+  );
   return (
     <Container>
       <UserBox>
@@ -195,24 +122,17 @@ const Feed = (photo: seeFeed_seeFeed) => {
       </UserBox>
       <Photo src={photo.url} />
       <ControlBox>
-        <LikeBtn isLiked={photo.isLiked} onClick={toggleLike}>
-          {photo.isLiked ? (
-            <FontAwesomeIcon icon={faSolidHeart} />
-          ) : (
-            <FontAwesomeIcon icon={faHeart} />
-          )}
-        </LikeBtn>
-        <CommentBtn>
-          <FontAwesomeIcon icon={faComment} />
-        </CommentBtn>
+        <LikeBtn photoId={photo.id} isLiked={photo.isLiked} />
+        <Link to={`/posts/${photo.id}`}>
+          <CommentBtn>
+            <FontAwesomeIcon icon={faComment} />
+          </CommentBtn>
+        </Link>
         <DmBtn>
           <FontAwesomeIcon icon={faPaperPlane} />
         </DmBtn>
       </ControlBox>
-      <TotalLikes>
-        {photo.totalLikes}
-        {photo.totalLikes == 1 ? " like" : " likes"}
-      </TotalLikes>
+      <TotalLikes>{formatNumber(photo.totalLikes, "like")}</TotalLikes>
       <CommentList>
         <Comment
           userId={photo.user.id}
@@ -221,14 +141,14 @@ const Feed = (photo: seeFeed_seeFeed) => {
         />
         <Link to={`/posts/${photo.id}`}>
           <TotalComments>
-            View all {photo.totalComments}
-            {photo.totalComments == 1 ? " comment" : " comments"}
+            View all {formatNumber(photo.totalComments, "comment")}
           </TotalComments>
         </Link>
-        {photo.comments?.map(
+        {data?.seeComments?.map(
           (comment) =>
             comment && (
               <Comment
+                key={comment.id}
                 userId={comment.user.id}
                 username={comment.user.username}
                 payload={comment.payload}

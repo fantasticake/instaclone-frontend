@@ -14,19 +14,6 @@ export interface seeFeed_seeFeed_user {
   avatar: string | null;
 }
 
-export interface seeFeed_seeFeed_comments_user {
-  __typename: "User";
-  id: number;
-  username: string;
-}
-
-export interface seeFeed_seeFeed_comments {
-  __typename: "Comment";
-  id: number;
-  payload: string;
-  user: seeFeed_seeFeed_comments_user;
-}
-
 export interface seeFeed_seeFeed {
   __typename: "Photo";
   id: number;
@@ -37,7 +24,6 @@ export interface seeFeed_seeFeed {
   totalComments: number;
   createdAt: string;
   user: seeFeed_seeFeed_user;
-  comments: (seeFeed_seeFeed_comments | null)[] | null;
 }
 
 export interface seeFeed {

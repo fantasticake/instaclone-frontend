@@ -19,12 +19,18 @@ const Container = styled.div`
   width: 100%;
 `;
 
+const Content = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  width: 920px;
+  max-width: 90%;
+`;
+
 const Column = styled.div`
-  width: 300px;
-  max-width: 30%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 `;
 
 const LogoBox = styled(Link)`
@@ -50,6 +56,8 @@ const Buttons = styled.div`
   align-self: flex-end;
   display: flex;
   justify-content: center;
+  align-items: center;
+  height: 100%;
   gap: 20px;
 `;
 
@@ -78,24 +86,26 @@ const Header = () => {
   const data = useMe();
   return data ? (
     <Container>
-      <Column>
-        <LogoBox to={"/"}>
-          <Logo />
-        </LogoBox>
-      </Column>
-      <Column>
-        <SearchBox placeholder="&#xf002;   Search" />
-      </Column>
-      <Column>
-        <Buttons>
-          <ThemeBtn onClick={toggleTheme}>
-            <FontAwesomeIcon icon={themeVar() == "light" ? faMoon : faSun} />
-          </ThemeBtn>
-          <ProfileBtn to={`/users/${data?.seeMe?.id}`}>
-            <Avatar avatar={data?.seeMe?.avatar} />
-          </ProfileBtn>
-        </Buttons>
-      </Column>
+      <Content>
+        <Column>
+          <LogoBox to={"/"}>
+            <Logo />
+          </LogoBox>
+        </Column>
+        <Column>
+          <SearchBox placeholder="&#xf002;   Search" />
+        </Column>
+        <Column>
+          <Buttons>
+            <ThemeBtn onClick={toggleTheme}>
+              <FontAwesomeIcon icon={themeVar() == "light" ? faMoon : faSun} />
+            </ThemeBtn>
+            <ProfileBtn to={`/users/${data?.seeMe?.id}`}>
+              <Avatar avatar={data?.seeMe?.avatar} />
+            </ProfileBtn>
+          </Buttons>
+        </Column>
+      </Content>
     </Container>
   ) : null;
 };

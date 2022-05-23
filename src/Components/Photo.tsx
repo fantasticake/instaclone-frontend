@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { seeProfile_seeProfile_photos } from "../__generated__/seeProfile";
 
 const Container = styled(Link)`
   width: 100%;
@@ -56,7 +55,12 @@ const Photo = ({
   url,
   totalLikes,
   totalComments,
-}: seeProfile_seeProfile_photos) => {
+}: {
+  id: number;
+  url: string;
+  totalLikes: number;
+  totalComments: number;
+}) => {
   const [photoRatio, setPhotoRatio] = useState(1);
   const [loading, setLoading] = useState(true);
   useEffect(() => {

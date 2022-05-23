@@ -29,14 +29,6 @@ const SEEFEED_QUERY = gql`
         username
         avatar
       }
-      comments {
-        id
-        payload
-        user {
-          id
-          username
-        }
-      }
     }
   }
 `;
