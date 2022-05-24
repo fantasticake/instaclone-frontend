@@ -1,7 +1,13 @@
-import { faMoon, faSun } from "@fortawesome/free-regular-svg-icons";
+import {
+  faMoon,
+  faSun,
+  faPlusSquare,
+} from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useState } from "react";
+import ReactModal from "react-modal";
 import { Link } from "react-router-dom";
-import styled from "styled-components";
+import styled, { useTheme } from "styled-components";
 import useMe from "../hooks/useMe";
 import { themeVar, toggleTheme } from "../variables";
 import Avatar from "./Avatar";
@@ -40,8 +46,8 @@ const LogoBox = styled(Link)`
 `;
 
 const SearchBox = styled.input`
-  height: 30px;
-  width: 220px;
+  height: 34px;
+  width: 260px;
   padding: 0 14px;
   border-radius: 8px;
   font-family: FontAwesome;
@@ -61,14 +67,16 @@ const Buttons = styled.div`
   gap: 20px;
 `;
 
-const ThemeBtn = styled.button`
+const Button = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  border: none;
-  cursor: pointer;
-  font-size: 26px;
+  font-size: 24px;
 `;
+
+const CreateBtn = styled(Button)``;
+
+const ThemeBtn = styled(Button)``;
 
 const ProfileBtn = styled(Link)`
   display: flex;
@@ -82,8 +90,50 @@ const ProfileBtn = styled(Link)`
   overflow: hidden;
 `;
 
+const ModalContainer = styled.div`
+  height: 460px;
+  width: 760px;
+`;
+
+const ModalHeader = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: solid 1px ${(props) => props.theme.colors.faintLineColor};
+  height: 50px;
+  font-size: 16px;
+`;
+
+const FormBox = styled.div`
+  display: flex;
+  height: calc(100% - 50px);
+`;
+
+const PhotoInput = styled.input`
+  width: 55%;
+`;
+
+const TextBox = styled.div``;
+
+const UserBox = styled.div`
+  display: flex;
+`;
+
+const AvatarContainer = styled.div`
+  width: 30px;
+  height: 30px;
+  border-radius: 15px;
+  overflow: hidden;
+`;
+
+const Username = styled.span``;
+
+const CaptionInput = styled.input``;
+
 const Header = () => {
   const data = useMe();
+  const theme = useTheme();
+  const [isModal, setIsModal] = useState(false);
   return data ? (
     <Container>
       <Content>
@@ -97,6 +147,9 @@ const Header = () => {
         </Column>
         <Column>
           <Buttons>
+            <CreateBtn onClick={() => setIsModal(true)}>
+              <FontAwesomeIcon icon={faPlusSquare} />
+            </CreateBtn>
             <ThemeBtn onClick={toggleTheme}>
               <FontAwesomeIcon icon={themeVar() == "light" ? faMoon : faSun} />
             </ThemeBtn>
@@ -106,6 +159,41 @@ const Header = () => {
           </Buttons>
         </Column>
       </Content>
+      <ReactModal
+        style={{
+          overlay: {
+            zIndex: 1,
+            backgroundColor: theme.colors.blurryBackgroundColor,
+          },
+          content: {
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            backgroundColor: theme.colors.backgroundColor,
+            borderRadius: "18px",
+            padding: "0px",
+          },
+        }}
+        contentElement={(props) => (
+          <ModalContainer {...props}>
+            <ModalHeader>Create new post</ModalHeader>
+            <FormBox>
+              <PhotoInput type={"file"} />
+              <TextBox>
+                <UserBox>
+                  <AvatarContainer>
+                    <Avatar avatar={data.seeMe?.avatar} />
+                  </AvatarContainer>
+                  <Username>{data.seeMe?.username}</Username>
+                </UserBox>
+                <CaptionInput placeholder="Write a caption..." />
+              </TextBox>
+            </FormBox>
+          </ModalContainer>
+        )}
+        isOpen={isModal}
+        onRequestClose={() => setIsModal(false)}
+      />
     </Container>
   ) : null;
 };

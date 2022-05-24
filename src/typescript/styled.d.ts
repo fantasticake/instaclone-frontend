@@ -5,6 +5,7 @@ declare module "styled-components" {
     colors: {
       blue: string;
       backgroundColor: string;
+      blurryBackgroundColor: string;
       textColor: string;
       borderColor: string;
       focusedBorderColor: string;

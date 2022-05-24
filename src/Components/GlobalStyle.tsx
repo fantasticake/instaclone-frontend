@@ -8,6 +8,7 @@ const GlobalStyle = createGlobalStyle`
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif
     }
     * {
+        box-sizing: border-box;
         background-color: ${(props) => props.theme.colors.backgroundColor};
         color: ${(props) => props.theme.colors.textColor};
     }

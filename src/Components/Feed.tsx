@@ -3,7 +3,7 @@ import { faComment, faPaperPlane } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { formatNumber } from "../utils";
+import { formatDate, formatNumber } from "../utils";
 import {
   seeComments,
   seeCommentsVariables,
@@ -88,6 +88,7 @@ const CreatedAt = styled.span`
   padding: 0 14px;
   opacity: 0.6;
   margin-bottom: 24px;
+  font-size: 12px;
 `;
 
 const SEE_COMMENTS_QUERY = gql`
@@ -156,9 +157,7 @@ const Feed = (photo: seeFeed_seeFeed) => {
             )
         )}
       </CommentList>
-      <CreatedAt>
-        {new Date(parseInt(photo.createdAt)).toLocaleDateString()}
-      </CreatedAt>
+      <CreatedAt>{formatDate(photo.createdAt)}</CreatedAt>
       <CommentForm photoId={photo.id} />
     </Container>
   );

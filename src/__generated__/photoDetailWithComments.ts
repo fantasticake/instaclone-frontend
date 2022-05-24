@@ -19,6 +19,7 @@ export interface photoDetailWithComments_photoDetail {
   id: number;
   url: string;
   caption: string;
+  isLiked: boolean;
   user: photoDetailWithComments_photoDetail_user;
   totalLikes: number;
   createdAt: string;
@@ -27,6 +28,7 @@ export interface photoDetailWithComments_photoDetail {
 export interface photoDetailWithComments_seeComments_user {
   __typename: "User";
   id: number;
+  avatar: string | null;
   username: string;
 }
 

@@ -6,6 +6,9 @@ import GlobalStyle from "./Components/GlobalStyle";
 import Router from "./Components/Router";
 import { darkTheme, lightTheme } from "./themes";
 import { themeVar } from "./variables";
+import ReactModal from "react-modal";
+
+ReactModal.setAppElement("#root");
 
 function App() {
   const theme = useReactiveVar(themeVar);

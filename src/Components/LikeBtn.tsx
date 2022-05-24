@@ -16,9 +16,12 @@ import {
 } from "../__generated__/unlikePhoto";
 
 const Container = styled.button<{ isLiked: boolean }>`
-  svg path {
-    color: ${(props) =>
-      props.isLiked ? "tomato" : props.theme.colors.textColor};
+  svg {
+    font-size: 22px;
+    path {
+      color: ${(props) =>
+        props.isLiked ? "tomato" : props.theme.colors.textColor};
+    }
   }
   :hover {
     ${(props) => (!props.isLiked ? "opacity: 0.7;" : null)}
