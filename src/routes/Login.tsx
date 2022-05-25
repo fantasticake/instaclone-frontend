@@ -70,7 +70,7 @@ interface Inputs {
 }
 
 const Login = () => {
-  const { state } = useLocation();
+  const { state }: { state: any } = useLocation();
   const {
     register,
     handleSubmit,
