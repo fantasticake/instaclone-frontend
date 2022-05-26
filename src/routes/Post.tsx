@@ -1,6 +1,8 @@
 import { gql, useLazyQuery, useQuery } from "@apollo/client";
 import { faComment, faPaperPlane } from "@fortawesome/free-regular-svg-icons";
+import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
@@ -8,8 +10,9 @@ import Avatar from "../Components/Avatar";
 import CommentForm from "../Components/CommentForm";
 import Header from "../Components/Header";
 import LikeBtn from "../Components/LikeBtn";
+import PhotoSettingModal from "../Components/modals/PhotoSettingModal";
 import PhotoGrid from "../Components/PhotoGrid";
-import { formatDate, formatNumber } from "../utils";
+import { formatDate, formatNumber, getIsScrollEnd } from "../utils";
 import {
   photoDetailWithComments,
   photoDetailWithCommentsVariables,
@@ -51,10 +54,6 @@ const Photo = styled.img`
 const CommentBox = styled.div`
   width: 360px;
   border: solid 2px ${(props) => props.theme.colors.faintLineColor};
-  overflow-y: scroll;
-  ::-webkit-scrollbar {
-    display: none;
-  }
 `;
 
 const OwnerBox = styled.div`
@@ -62,9 +61,15 @@ const OwnerBox = styled.div`
   top: 0;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   height: 60px;
   padding: 0 16px;
   border-bottom: solid 1px ${(props) => props.theme.colors.faintLineColor};
+`;
+
+const OwnerInfoBox = styled.div`
+  display: flex;
+  align-items: center;
 `;
 
 const AvatarContainer = styled(Link)`
@@ -80,30 +85,33 @@ const Username = styled(Link)`
   font-weight: 500;
 `;
 
-const CommentList = styled.div``;
+const SettingBtn = styled.button``;
+
+const CommentList = styled.div`
+  height: 380px;
+  overflow-y: scroll;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+`;
 
 const CommentContainer = styled.div`
   display: flex;
   padding: 16px;
+  word-wrap: break-word;
 `;
 
 const Comment = styled.div`
-  display: flex;
   margin-top: 2px;
-  width: 250px;
-  word-wrap: break-word;
+  width: 280px;
 `;
 
 const Caption = styled.span``;
 
-const Payload = styled.span`
-  display: block;
-  width: 100%;
-`;
+const Payload = styled.span``;
 
 const ControlBox = styled.div`
   position: sticky;
-  bottom: 0px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -144,7 +152,7 @@ const PhotoBox = styled.div`
 `;
 
 const PHOTO_DETAIL_QUERY = gql`
-  query photoDetailWithComments($photoId: Int!) {
+  query photoDetailWithComments($photoId: Int!, $offset: Int) {
     photoDetail(photoId: $photoId) {
       id
       url
@@ -158,7 +166,7 @@ const PHOTO_DETAIL_QUERY = gql`
       totalLikes
       createdAt
     }
-    seeComments(photoId: $photoId) {
+    seeComments(photoId: $photoId, offset: $offset) {
       id
       payload
       user {
@@ -183,22 +191,44 @@ const SEE_PHOTOS_QUERY = gql`
 
 const Post = () => {
   const { id: photoId } = useParams();
+  const [moreLoadingComments, setMoreLoadingComments] = useState(false);
+  const [isOpenSetting, setIsOpenSetting] = useState(false);
+
   const [seePhotosQuery, { data: photosData }] = useLazyQuery<
     seePhotosByUser,
     seePhotosByUserVariables
   >(SEE_PHOTOS_QUERY);
-  const { data } = useQuery<
+
+  const { data, fetchMore: fetchMoreComments } = useQuery<
     photoDetailWithComments,
     photoDetailWithCommentsVariables
   >(PHOTO_DETAIL_QUERY, {
     variables: { photoId: parseInt(photoId || "0") },
     onCompleted: (data) => {
+      setMoreLoadingComments(false);
       if (data.photoDetail?.user)
         seePhotosQuery({ variables: { userId: data.photoDetail?.user.id } });
     },
   });
+
+  const onScrollComments = (e: any) => {
+    if (getIsScrollEnd(e) && !moreLoadingComments && data?.seeComments) {
+      setMoreLoadingComments(true);
+      fetchMoreComments({ variables: { offset: data?.seeComments.length } });
+    }
+  };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [photoId]);
+
   return (
     <Container>
+      <PhotoSettingModal
+        photoId={parseInt(photoId || "0")}
+        isOpen={isOpenSetting}
+        setIsOpen={setIsOpenSetting}
+      />
       <Header />
       <Content>
         {data?.photoDetail && (
@@ -206,14 +236,19 @@ const Post = () => {
             <Photo src={data?.photoDetail.url} />
             <CommentBox>
               <OwnerBox>
-                <AvatarContainer to={`/users/${data.photoDetail.user.id}`}>
-                  <Avatar avatar={data.photoDetail.user.avatar} />
-                </AvatarContainer>
-                <Username to={`/users/${data.photoDetail.user.id}`}>
-                  {data.photoDetail.user.username}
-                </Username>
+                <OwnerInfoBox>
+                  <AvatarContainer to={`/users/${data.photoDetail.user.id}`}>
+                    <Avatar avatar={data.photoDetail.user.avatar} />
+                  </AvatarContainer>
+                  <Username to={`/users/${data.photoDetail.user.id}`}>
+                    {data.photoDetail.user.username}
+                  </Username>
+                </OwnerInfoBox>
+                <SettingBtn onClick={() => setIsOpenSetting(true)}>
+                  <FontAwesomeIcon icon={faEllipsis} />
+                </SettingBtn>
               </OwnerBox>
-              <CommentList>
+              <CommentList onScroll={onScrollComments}>
                 <CommentContainer>
                   <AvatarContainer to={`/users/${data.photoDetail.user.id}`}>
                     <Avatar avatar={data.photoDetail.user.avatar} />
@@ -226,7 +261,7 @@ const Post = () => {
                   </Comment>
                 </CommentContainer>
                 {data.seeComments?.map((comment) => (
-                  <CommentContainer>
+                  <CommentContainer key={comment?.id}>
                     <AvatarContainer to={`/users/${comment?.user.id}`}>
                       <Avatar avatar={comment?.user.avatar} />
                     </AvatarContainer>

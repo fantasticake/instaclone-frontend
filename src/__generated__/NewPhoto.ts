@@ -4,17 +4,17 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: seeFeed
+// GraphQL fragment: NewPhoto
 // ====================================================
 
-export interface seeFeed_seeFeed_user {
+export interface NewPhoto_user {
   __typename: "User";
   id: number;
-  username: string;
   avatar: string | null;
+  username: string;
 }
 
-export interface seeFeed_seeFeed {
+export interface NewPhoto {
   __typename: "Photo";
   id: number;
   url: string;
@@ -23,13 +23,5 @@ export interface seeFeed_seeFeed {
   totalLikes: number;
   totalComments: number;
   createdAt: string;
-  user: seeFeed_seeFeed_user;
-}
-
-export interface seeFeed {
-  seeFeed: (seeFeed_seeFeed | null)[] | null;
-}
-
-export interface seeFeedVariables {
-  offset?: number | null;
+  user: NewPhoto_user;
 }

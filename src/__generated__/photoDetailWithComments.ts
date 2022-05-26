@@ -18,7 +18,7 @@ export interface photoDetailWithComments_photoDetail {
   __typename: "Photo";
   id: number;
   url: string;
-  caption: string;
+  caption: string | null;
   isLiked: boolean;
   user: photoDetailWithComments_photoDetail_user;
   totalLikes: number;
@@ -46,4 +46,5 @@ export interface photoDetailWithComments {
 
 export interface photoDetailWithCommentsVariables {
   photoId: number;
+  offset?: number | null;
 }

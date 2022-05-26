@@ -13,3 +13,6 @@ export const formatDate = (date: string) => {
     .replace("/", " ")
     .replace("/", ", ");
 };
+
+export const getIsScrollEnd = (e: any) =>
+  (e.target.scrollTop + e.target.clientHeight) / e.target.scrollHeight > 0.8;

@@ -27,7 +27,26 @@ const authLink = setContext(({ operationName }, { headers }) => {
 });
 
 const client = new ApolloClient({
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          seeFeed: {
+            keyArgs: false,
+            merge(existing = [], incoming) {
+              return [...existing, ...incoming];
+            },
+          },
+          seeComments: {
+            keyArgs: ["photoId"],
+            merge(existing = [], incoming) {
+              return [...existing, ...incoming];
+            },
+          },
+        },
+      },
+    },
+  }),
   /* @ts-ignore */
   link: authLink.concat(errorLink).concat(uploadLink),
 });

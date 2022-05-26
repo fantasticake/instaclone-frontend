@@ -26,4 +26,5 @@ export interface seeComments {
 
 export interface seeCommentsVariables {
   photoId: number;
+  take?: number | null;
 }

@@ -105,8 +105,9 @@ const CommentForm = ({ photoId }: { photoId: number }) => {
         id: `ROOT_QUERY`,
         fields: {
           seeComments(prev, { storeFieldName }) {
-            if (`seeComments({"photoId":${photoId}})` == storeFieldName)
-              return [...prev, newCommentFragment];
+            if (`seeComments:{"photoId":${photoId}}` == storeFieldName) {
+              return [newCommentFragment, ...prev];
+            }
             return prev;
           },
         },

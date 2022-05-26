@@ -95,6 +95,7 @@ const Header = () => {
   const [isModal, setIsModal] = useState(false);
   return data ? (
     <Container>
+      <UploadPhotoModal isOpen={isModal} setIsOpen={setIsModal} />
       <Content>
         <Column>
           <LogoBox to={"/"}>
@@ -118,7 +119,6 @@ const Header = () => {
           </Buttons>
         </Column>
       </Content>
-      <UploadPhotoModal isOpen={isModal} setIsOpen={setIsModal} />
     </Container>
   ) : null;
 };

@@ -1,6 +1,8 @@
 import { gql, useQuery } from "@apollo/client";
 import { faComment, faPaperPlane } from "@fortawesome/free-regular-svg-icons";
+import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { formatDate, formatNumber } from "../utils";
@@ -13,6 +15,7 @@ import Avatar from "./Avatar";
 import Comment from "./Comment";
 import CommentForm from "./CommentForm";
 import LikeBtn from "./LikeBtn";
+import PhotoSettingModal from "./modals/PhotoSettingModal";
 
 const Container = styled.div`
   width: 400px;
@@ -25,8 +28,15 @@ const Container = styled.div`
 const UserBox = styled.div`
   padding: 0 12px;
   display: flex;
+  justify-content: space-between;
   align-items: center;
   height: 50px;
+`;
+
+const UserInfoBox = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 const AvatarContainer = styled.div`
@@ -34,12 +44,18 @@ const AvatarContainer = styled.div`
   width: 26px;
   border-radius: 15px;
   font-size: 26px;
-  margin-right: 18px;
+  margin-right: 14px;
   overflow: hidden;
 `;
 
 const Username = styled.span`
   font-weight: 500;
+`;
+
+const SettingBtn = styled.button`
+  svg {
+    font-size: 18px;
+  }
 `;
 
 const Photo = styled.img`
@@ -92,8 +108,8 @@ const CreatedAt = styled.span`
 `;
 
 const SEE_COMMENTS_QUERY = gql`
-  query seeComments($photoId: Int!) {
-    seeComments(photoId: $photoId) {
+  query seeComments($photoId: Int!, $take: Int) {
+    seeComments(photoId: $photoId, take: $take) {
       id
       payload
       user {
@@ -107,19 +123,32 @@ const SEE_COMMENTS_QUERY = gql`
 const Feed = (photo: seeFeed_seeFeed) => {
   const { data } = useQuery<seeComments, seeCommentsVariables>(
     SEE_COMMENTS_QUERY,
-    { variables: { photoId: photo.id } }
+    { variables: { photoId: photo.id, take: 2 } }
   );
+
+  const [isOpenSetting, setIsOpenSetting] = useState(false);
+
   return (
     <Container>
+      <PhotoSettingModal
+        photoId={photo.id}
+        isOpen={isOpenSetting}
+        setIsOpen={setIsOpenSetting}
+      />
       <UserBox>
-        <Link to={`/users/${photo.user.id}`}>
-          <AvatarContainer>
-            <Avatar avatar={photo.user.avatar} />
-          </AvatarContainer>
-        </Link>
-        <Link to={`/users/${photo.user.id}`}>
-          <Username>{photo.user.username}</Username>
-        </Link>
+        <UserInfoBox>
+          <Link to={`/users/${photo.user.id}`}>
+            <AvatarContainer>
+              <Avatar avatar={photo.user.avatar} />
+            </AvatarContainer>
+          </Link>
+          <Link to={`/users/${photo.user.id}`}>
+            <Username>{photo.user.username}</Username>
+          </Link>
+        </UserInfoBox>
+        <SettingBtn onClick={() => setIsOpenSetting(true)}>
+          <FontAwesomeIcon icon={faEllipsis} />
+        </SettingBtn>
       </UserBox>
       <Photo src={photo.url} />
       <ControlBox>
@@ -138,24 +167,26 @@ const Feed = (photo: seeFeed_seeFeed) => {
         <Comment
           userId={photo.user.id}
           username={photo.user.username}
-          payload={photo.caption}
+          payload={photo.caption || ""}
         />
         <Link to={`/posts/${photo.id}`}>
           <TotalComments>
             View all {formatNumber(photo.totalComments, "comment")}
           </TotalComments>
         </Link>
-        {data?.seeComments?.map(
-          (comment) =>
-            comment && (
-              <Comment
-                key={comment.id}
-                userId={comment.user.id}
-                username={comment.user.username}
-                payload={comment.payload}
-              />
-            )
-        )}
+        {data?.seeComments
+          ?.slice(0, 2)
+          .map(
+            (comment) =>
+              comment && (
+                <Comment
+                  key={comment.id}
+                  userId={comment.user.id}
+                  username={comment.user.username}
+                  payload={comment.payload}
+                />
+              )
+          )}
       </CommentList>
       <CreatedAt>{formatDate(photo.createdAt)}</CreatedAt>
       <CommentForm photoId={photo.id} />

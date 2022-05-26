@@ -6,6 +6,7 @@ import styled from "styled-components";
 
 const Container = styled(Link)`
   width: 100%;
+  align-self: center;
   position: relative;
   :hover {
     img {
@@ -63,6 +64,7 @@ const Photo = ({
 }) => {
   const [photoRatio, setPhotoRatio] = useState(1);
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const img = new Image();
     img.src = url;
@@ -77,6 +79,7 @@ const Photo = ({
       });
     };
   }, [url]);
+
   return loading ? null : (
     <Container to={`/posts/${id}`} style={{ height: 300 * photoRatio }}>
       <Img src={url} />

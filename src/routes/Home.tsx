@@ -1,10 +1,15 @@
 import { gql, useQuery } from "@apollo/client";
 import styled from "styled-components";
 import Header from "../Components/Header";
-import { seeFeed } from "../__generated__/seeFeed";
+import { seeFeed, seeFeedVariables } from "../__generated__/seeFeed";
 import Feed from "../Components/Feed";
+import { useState } from "react";
+import { getIsScrollEnd } from "../utils";
 
-const Container = styled.div``;
+const Container = styled.div`
+  height: 100vh;
+  overflow-y: auto;
+`;
 
 const FeedList = styled.div`
   margin: 26px 0;
@@ -15,8 +20,8 @@ const FeedList = styled.div`
 `;
 
 const SEEFEED_QUERY = gql`
-  query seeFeed {
-    seeFeed {
+  query seeFeed($offset: Int) {
+    seeFeed(offset: $offset) {
       id
       url
       caption
@@ -34,9 +39,23 @@ const SEEFEED_QUERY = gql`
 `;
 
 const Home = () => {
-  const { data } = useQuery<seeFeed>(SEEFEED_QUERY);
+  const [moreLoading, setMoreLoading] = useState(false);
+  const { data, fetchMore } = useQuery<seeFeed, seeFeedVariables>(
+    SEEFEED_QUERY,
+    { onCompleted: () => setMoreLoading(false) }
+  );
+
+  const onScroll = (e: any) => {
+    if (getIsScrollEnd(e) && !moreLoading) {
+      setMoreLoading(true);
+      fetchMore({
+        variables: { offset: data?.seeFeed?.length },
+      });
+    }
+  };
+
   return (
-    <Container>
+    <Container onScroll={onScroll}>
       <Header />
       {data && (
         <FeedList>

@@ -1,4 +1,3 @@
-import ReactModal from "react-modal";
 import styled, { useTheme } from "styled-components";
 import useMe from "../../hooks/useMe";
 import Avatar from "../Avatar";
@@ -6,7 +5,7 @@ import React from "react";
 import { useState } from "react";
 import { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faImage } from "@fortawesome/free-regular-svg-icons";
+import { faImage, faCheckCircle } from "@fortawesome/free-regular-svg-icons";
 import { SubmitHandler, useForm } from "react-hook-form";
 import {
   ApolloCache,
@@ -19,6 +18,9 @@ import {
   createPhoto,
   createPhotoVariables,
 } from "../../__generated__/createPhoto";
+
+import BeatLoader from "react-spinners/BeatLoader";
+import BasicModal from "./BasicModal";
 
 const Container = styled.div`
   width: 760px;
@@ -37,6 +39,36 @@ const ModalHeader = styled.div`
   font-size: 16px;
 `;
 
+const SharingHeader = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: solid 1px ${(props) => props.theme.colors.faintLineColor};
+  height: 50px;
+  font-size: 16px;
+`;
+
+const Loading = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 410px;
+`;
+
+const Completed = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  height: 410px;
+`;
+
+const CompletedText = styled.span`
+  font-size: 22px;
+  opacity: 0.7;
+`;
+
 const ClearBtnContainer = styled.div`
   display: flex;
   justify-content: flex-start;
@@ -45,7 +77,7 @@ const ClearBtnContainer = styled.div`
 
 const ClearBtn = styled.button`
   font-size: 14px;
-  color: tomato;
+  opacity: 0.7;
 `;
 
 const HeaderTitle = styled.span`
@@ -76,11 +108,7 @@ const PhotoBox = styled.div`
   box-sizing: content-box;
 `;
 
-interface PhotoInputBoxProps {
-  isSelected: boolean;
-}
-
-const PhotoInputBox = styled.div<PhotoInputBoxProps>`
+const PhotoInputBox = styled.div<{ isSelected: boolean }>`
   ${(props) => (props.isSelected ? "display:none;" : null)}
   width: 420px;
   height: 90%;
@@ -144,11 +172,6 @@ const Caption = styled.textarea`
   line-height: 26px;
 `;
 
-interface Inputs {
-  files: File[];
-  caption: string;
-}
-
 const CREATE_PHOTO_MUTATION = gql`
   mutation createPhoto($file: Upload!, $caption: String) {
     createPhoto(file: $file, caption: $caption) {
@@ -158,6 +181,11 @@ const CREATE_PHOTO_MUTATION = gql`
     }
   }
 `;
+
+interface Inputs {
+  files: File[];
+  caption: string;
+}
 
 const UploadPhotoModal = ({
   isOpen,
@@ -170,6 +198,7 @@ const UploadPhotoModal = ({
   const theme = useTheme();
   const [selectedPhoto, setSelectedPhoto] = useState<Blob | MediaSource>();
   const [loadedPhoto, setLoadedPhoto] = useState("");
+  const [isPhotoCreated, setIsPhotoCreated] = useState(false);
   const { register, handleSubmit, getValues } = useForm<Inputs>();
 
   const updateMutation: MutationUpdaterFunction<
@@ -178,7 +207,7 @@ const UploadPhotoModal = ({
     DefaultContext,
     ApolloCache<any>
   > = (cache, { data }) => {
-    if (data?.createPhoto.ok && meData?.seeMe) {
+    if (data?.createPhoto.ok && meData?.seeMe && loadedPhoto) {
       const newPhoto = {
         __typename: "Photo",
         id: data.createPhoto.id,
@@ -189,7 +218,7 @@ const UploadPhotoModal = ({
         totalComments: 0,
         createdAt: Date.now() + "",
         user: {
-          __ref: `User:${meData.seeMe.id}`,
+          ...meData.seeMe,
         },
       };
       const newPhotoFragment = cache.writeFragment({
@@ -205,8 +234,8 @@ const UploadPhotoModal = ({
             createdAt
             user {
               id
-              username
               avatar
+              username
             }
           }
         `,
@@ -215,10 +244,11 @@ const UploadPhotoModal = ({
         id: "ROOT_QUERY",
         fields: {
           seeFeed(prev) {
-            return [...prev, newPhotoFragment];
+            return [newPhotoFragment, ...prev];
           },
         },
       });
+      setIsPhotoCreated(true);
     }
   };
 
@@ -233,97 +263,101 @@ const UploadPhotoModal = ({
     }
   };
 
-  const initSelected = () => {
-    setSelectedPhoto(undefined);
-    setLoadedPhoto("");
-  };
-
   const onSelectPhoto = (e: any) => {
     if (!e.target.files || e.target.files.length == 0)
       setSelectedPhoto(undefined);
     else setSelectedPhoto(e.target.files[0]);
   };
 
+  const initSelected = () => {
+    setSelectedPhoto(undefined);
+    setLoadedPhoto("");
+  };
+
   const onClose = () => {
     setIsOpen(false);
     initSelected();
+    setIsPhotoCreated(false);
   };
 
   useEffect(() => {
-    let photoUrl: string;
     if (typeof selectedPhoto == "undefined") {
       setLoadedPhoto("");
     } else {
-      photoUrl = URL.createObjectURL(selectedPhoto);
+      const photoUrl = URL.createObjectURL(selectedPhoto);
       setLoadedPhoto(photoUrl);
     }
-    return () => {
-      URL.revokeObjectURL(photoUrl);
-    };
   }, [selectedPhoto]);
 
   return (
-    <ReactModal
-      style={{
-        overlay: {
-          zIndex: 1,
-          backgroundColor: theme.colors.blurryBackgroundColor,
-        },
-        content: {
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          backgroundColor: theme.colors.backgroundColor,
-          borderRadius: "18px",
-          padding: "0px",
-        },
-      }}
-      contentElement={(props) => (
+    <BasicModal
+      contentElement={(props: any) => (
         <Container {...props}>
-          <ModalHeader>
-            <ClearBtnContainer>
-              <ClearBtn onClick={initSelected}>Clear</ClearBtn>
-            </ClearBtnContainer>
-            <HeaderTitle>Create new post</HeaderTitle>
-            <ShareBtnContainer>
-              <ShareBtn onClick={handleSubmit(onValid)}>Share</ShareBtn>
-            </ShareBtnContainer>
-          </ModalHeader>
-          <FormBox>
-            <PhotoBox>
-              <PhotoInputBox isSelected={Boolean(selectedPhoto)}>
-                <PhotoInput
-                  {...register("files", { required: true })}
-                  id="photoInput"
-                  onChange={onSelectPhoto}
-                  type="file"
-                  accept="image/*"
-                />
-                <PhotoInputLabel htmlFor="photoInput">
-                  <FontAwesomeIcon icon={faImage} size="2x" />
-                  Drag photos here
-                </PhotoInputLabel>
-              </PhotoInputBox>
-              {loadedPhoto && <Photo src={loadedPhoto} />}
-            </PhotoBox>
-            <TextBox>
-              <UserBox>
-                <AvatarContainer>
-                  <Avatar avatar={meData?.seeMe?.avatar} />
-                </AvatarContainer>
-                <Username>{meData?.seeMe?.username}</Username>
-              </UserBox>
-              <Caption
-                {...register("caption")}
-                spellCheck={false}
-                placeholder="Write a caption..."
-              />
-            </TextBox>
-          </FormBox>
+          {!loading && !isPhotoCreated && (
+            <>
+              <ModalHeader>
+                <ClearBtnContainer>
+                  <ClearBtn onClick={initSelected}>Clear</ClearBtn>
+                </ClearBtnContainer>
+                <HeaderTitle>Create new post</HeaderTitle>
+                <ShareBtnContainer>
+                  <ShareBtn onClick={handleSubmit(onValid)}>Share</ShareBtn>
+                </ShareBtnContainer>
+              </ModalHeader>
+              <FormBox>
+                <PhotoBox>
+                  <PhotoInputBox isSelected={Boolean(selectedPhoto)}>
+                    <PhotoInput
+                      {...register("files", { required: true })}
+                      id="photoInput"
+                      onChange={onSelectPhoto}
+                      type="file"
+                      accept="image/*"
+                    />
+                    <PhotoInputLabel htmlFor="photoInput">
+                      <FontAwesomeIcon icon={faImage} size="2x" />
+                      Drag photos here
+                    </PhotoInputLabel>
+                  </PhotoInputBox>
+                  {loadedPhoto && <Photo src={loadedPhoto} />}
+                </PhotoBox>
+                <TextBox>
+                  <UserBox>
+                    <AvatarContainer>
+                      <Avatar avatar={meData?.seeMe?.avatar} />
+                    </AvatarContainer>
+                    <Username>{meData?.seeMe?.username}</Username>
+                  </UserBox>
+                  <Caption
+                    {...register("caption")}
+                    spellCheck={false}
+                    placeholder="Write a caption..."
+                  />
+                </TextBox>
+              </FormBox>
+            </>
+          )}
+          {loading && (
+            <>
+              <SharingHeader>Sharing</SharingHeader>
+              <Loading>
+                <BeatLoader size={22} color={theme.colors.textColor} />
+              </Loading>
+            </>
+          )}
+          {isPhotoCreated && (
+            <>
+              <SharingHeader>Post shared</SharingHeader>
+              <Completed>
+                <FontAwesomeIcon size="5x" icon={faCheckCircle} />
+                <CompletedText>Your post has been shared.</CompletedText>
+              </Completed>
+            </>
+          )}
         </Container>
       )}
       isOpen={isOpen}
-      onRequestClose={onClose}
+      onClose={onClose}
     />
   );
 };
