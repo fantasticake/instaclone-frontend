@@ -8,6 +8,7 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import useMe from "../../hooks/useMe";
 import {
   deletePhoto,
   deletePhotoVariables,
@@ -45,19 +46,20 @@ const PhotoSettingModal = ({
   isOpen,
   setIsOpen,
   photoId,
+  ownerId,
 }: {
   isOpen: boolean;
   setIsOpen: any;
   photoId: number;
+  ownerId: number;
 }) => {
+  const meData = useMe();
   const navigate = useNavigate();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const onClose = () => {
     setIsOpen(false);
   };
-
-  const onClickEdit = () => {};
 
   const updateMutation: MutationUpdaterFunction<
     deletePhoto,
@@ -86,8 +88,16 @@ const PhotoSettingModal = ({
             isOpen={isEditModalOpen}
             setIsOpen={setIsEditModalOpen}
           />
-          <DeleteBtn onClick={() => deletePhotoMutation()}>Delete</DeleteBtn>
-          <Button onClick={() => setIsEditModalOpen(true)}>Edit</Button>
+          {ownerId == meData?.seeMe?.id && (
+            <DeleteBtn onClick={() => deletePhotoMutation()}>Delete</DeleteBtn>
+          )}
+          {ownerId == meData?.seeMe?.id && (
+            <Button onClick={() => setIsEditModalOpen(true)}>Edit</Button>
+          )}
+          <Button onClick={() => navigate(`/posts/${photoId}`)}>
+            Go to post
+          </Button>
+          <Button onClick={() => onClose()}>Cancel</Button>
         </Container>
       )}
       isOpen={isOpen}

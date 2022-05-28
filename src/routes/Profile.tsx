@@ -1,8 +1,9 @@
 import { gql, useQuery } from "@apollo/client";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import Avatar from "../Components/Avatar";
 import Header from "../Components/Header";
+import FollowBtn from "../Components/FollowBtn";
 import PhotoGrid from "../Components/PhotoGrid";
 import useMe from "../hooks/useMe";
 import { formatNumber } from "../utils";
@@ -68,8 +69,6 @@ const EditBtn = styled(Button)``;
 
 const MessageBtn = styled(Button)``;
 
-const FollowBtn = styled(Button)``;
-
 const TotalBox = styled.div`
   display: flex;
   justify-content: center;
@@ -89,6 +88,7 @@ const SEE_PROFILE_QUERY = gql`
       id
       username
       avatar
+      isFollowing
       totalPosts
       totalFollowing
       totalFollowers
@@ -105,6 +105,7 @@ const SEE_PROFILE_QUERY = gql`
 const Profile = () => {
   const meData = useMe();
   const { id } = useParams();
+  const navigate = useNavigate();
   const { data } = useQuery<
     seeProfileWithPhotos,
     seeProfileWithPhotosVariables
@@ -122,9 +123,18 @@ const Profile = () => {
           <InfoBox>
             <ControlBox>
               <Username>{data?.seeProfile?.username}</Username>
-              {meData?.seeMe?.id == id && <EditBtn>Edit Profile</EditBtn>}
+              {meData?.seeMe?.id == id && (
+                <EditBtn onClick={() => navigate("/accounts/edit")}>
+                  Edit Profile
+                </EditBtn>
+              )}
               {meData?.seeMe?.id != id && <MessageBtn>Message</MessageBtn>}
-              {meData?.seeMe?.id != id && <FollowBtn>Follow</FollowBtn>}
+              {meData?.seeMe?.id != id && data.seeProfile && (
+                <FollowBtn
+                  userId={parseInt(id || "0")}
+                  isFollowing={data.seeProfile?.isFollowing}
+                />
+              )}
             </ControlBox>
             <TotalBox>
               <TotalPosts>

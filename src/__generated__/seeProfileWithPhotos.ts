@@ -12,6 +12,7 @@ export interface seeProfileWithPhotos_seeProfile {
   id: number;
   username: string;
   avatar: string | null;
+  isFollowing: boolean;
   totalPosts: number;
   totalFollowing: number;
   totalFollowers: number;

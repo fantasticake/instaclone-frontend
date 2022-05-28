@@ -15,8 +15,6 @@ const GlobalStyle = createGlobalStyle`
     span {
         background-color:transparent;
     }
-    input,button,div{
-    }
     input {
         padding: 0 6px;
         outline:none;

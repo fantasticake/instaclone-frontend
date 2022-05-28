@@ -91,6 +91,7 @@ const UserBox = styled.div`
 const AvatarContainer = styled.div`
   width: 30px;
   height: 30px;
+  font-size: 30px;
   border-radius: 15px;
   overflow: hidden;
   margin-right: 14px;

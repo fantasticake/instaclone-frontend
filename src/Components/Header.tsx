@@ -12,6 +12,8 @@ import { themeVar, toggleTheme } from "../variables";
 import Avatar from "./Avatar";
 import Logo from "./Logo";
 import UploadPhotoModal from "./modals/UploadPhotoModal";
+import ProfileBtn from "./ProfileBtn";
+import SearchUserBox from "./SearchUserBox";
 
 const Container = styled.div`
   position: sticky;
@@ -45,19 +47,6 @@ const LogoBox = styled(Link)`
   margin-top: 10px;
 `;
 
-const SearchBox = styled.input`
-  height: 34px;
-  width: 260px;
-  padding: 0 14px;
-  border-radius: 8px;
-  font-family: FontAwesome;
-  font-size: 18px;
-  ::placeholder {
-    font-size: 16px;
-    opacity: 0.3;
-  }
-`;
-
 const Buttons = styled.div`
   align-self: flex-end;
   display: flex;
@@ -78,24 +67,12 @@ const CreateBtn = styled(Button)``;
 
 const ThemeBtn = styled(Button)``;
 
-const ProfileBtn = styled(Link)`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  width: 30px;
-  height: 30px;
-  border-radius: 15px;
-  font-size: 30px;
-  overflow: hidden;
-`;
-
 const Header = () => {
   const data = useMe();
-  const [isModal, setIsModal] = useState(false);
+  const [isUploadOpen, setIsUploadOpen] = useState(false);
   return data ? (
     <Container>
-      <UploadPhotoModal isOpen={isModal} setIsOpen={setIsModal} />
+      <UploadPhotoModal isOpen={isUploadOpen} setIsOpen={setIsUploadOpen} />
       <Content>
         <Column>
           <LogoBox to={"/"}>
@@ -103,19 +80,17 @@ const Header = () => {
           </LogoBox>
         </Column>
         <Column>
-          <SearchBox placeholder="&#xf002;   Search" />
+          <SearchUserBox />
         </Column>
         <Column>
           <Buttons>
-            <CreateBtn onClick={() => setIsModal(true)}>
+            <CreateBtn onClick={() => setIsUploadOpen(true)}>
               <FontAwesomeIcon icon={faPlusSquare} />
             </CreateBtn>
             <ThemeBtn onClick={toggleTheme}>
               <FontAwesomeIcon icon={themeVar() == "light" ? faMoon : faSun} />
             </ThemeBtn>
-            <ProfileBtn to={`/users/${data?.seeMe?.id}`}>
-              <Avatar avatar={data?.seeMe?.avatar} />
-            </ProfileBtn>
+            <ProfileBtn />
           </Buttons>
         </Column>
       </Content>

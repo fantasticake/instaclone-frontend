@@ -4,17 +4,15 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: seeMe
+// GraphQL mutation operation: deleteAccount
 // ====================================================
 
-export interface seeMe_seeMe {
-  __typename: "User";
-  id: number;
-  username: string;
-  avatar: string | null;
-  email: string | null;
+export interface deleteAccount_deleteAccount {
+  __typename: "MutationRes";
+  ok: boolean;
+  error: string | null;
 }
 
-export interface seeMe {
-  seeMe: seeMe_seeMe | null;
+export interface deleteAccount {
+  deleteAccount: deleteAccount_deleteAccount;
 }

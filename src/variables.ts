@@ -1,4 +1,5 @@
 import { makeVar } from "@apollo/client";
+import client from "./client";
 
 export const tokenVar = makeVar(localStorage.getItem("token"));
 
@@ -12,6 +13,7 @@ export const setLogin = (token: string) => {
 export const logout = () => {
   tokenVar(null);
   localStorage.removeItem("token");
+  client.clearStore();
 };
 
 export const toggleTheme = () => {

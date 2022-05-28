@@ -9,7 +9,7 @@ const Container = styled.div`
   grid-template-columns: 1fr 1fr 1fr;
   border-top: solid 1px ${(props) => props.theme.colors.faintLineColor};
   padding-top: 46px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 `;
 
 const PhotoGrid = ({

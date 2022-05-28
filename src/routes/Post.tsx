@@ -48,7 +48,7 @@ const Photo = styled.img`
   height: 100%;
   max-width: 60%;
   object-fit: contain;
-  object-position: top right;
+  object-position: top right bottom;
 `;
 
 const CommentBox = styled.div`
@@ -75,6 +75,7 @@ const OwnerInfoBox = styled.div`
 const AvatarContainer = styled(Link)`
   width: 32px;
   height: 32px;
+  font-size: 32px;
   border-radius: 16px;
   margin-right: 16px;
   overflow: hidden;
@@ -224,11 +225,14 @@ const Post = () => {
 
   return (
     <Container>
-      <PhotoSettingModal
-        photoId={parseInt(photoId || "0")}
-        isOpen={isOpenSetting}
-        setIsOpen={setIsOpenSetting}
-      />
+      {data?.photoDetail && (
+        <PhotoSettingModal
+          ownerId={data?.photoDetail?.user.id}
+          photoId={parseInt(photoId || "0")}
+          isOpen={isOpenSetting}
+          setIsOpen={setIsOpenSetting}
+        />
+      )}
       <Header />
       <Content>
         {data?.photoDetail && (
@@ -302,7 +306,11 @@ const Post = () => {
         )}
         {photosData?.seePhotosByUser && (
           <PhotoBox>
-            <PhotoGrid photos={photosData.seePhotosByUser} />
+            <PhotoGrid
+              photos={photosData.seePhotosByUser.filter((photo) => {
+                if (photo) return photo.id + "" != photoId;
+              })}
+            />
           </PhotoBox>
         )}
       </Content>

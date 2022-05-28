@@ -9,6 +9,7 @@ const SEEME_QUERY = gql`
       id
       username
       avatar
+      email
     }
   }
 `;
@@ -16,7 +17,7 @@ const SEEME_QUERY = gql`
 const useMe = () => {
   const navigate = useNavigate();
   const { data, loading } = useQuery<seeMe>(SEEME_QUERY);
-  if (!loading && !data?.seeMe) {
+  if (!loading && typeof data != "undefined" && !data?.seeMe) {
     logout();
     navigate("/");
   }

@@ -44,6 +44,7 @@ const Form = styled.form`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 14px;
   margin-top: 26px;
 `;
 

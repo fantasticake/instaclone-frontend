@@ -132,6 +132,7 @@ const Feed = (photo: seeFeed_seeFeed) => {
     <Container>
       <PhotoSettingModal
         photoId={photo.id}
+        ownerId={photo.user.id}
         isOpen={isOpenSetting}
         setIsOpen={setIsOpenSetting}
       />

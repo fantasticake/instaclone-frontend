@@ -199,7 +199,7 @@ const UploadPhotoModal = ({
   const [selectedPhoto, setSelectedPhoto] = useState<Blob | MediaSource>();
   const [loadedPhoto, setLoadedPhoto] = useState("");
   const [isPhotoCreated, setIsPhotoCreated] = useState(false);
-  const { register, handleSubmit, getValues } = useForm<Inputs>();
+  const { register, handleSubmit, getValues, reset } = useForm<Inputs>();
 
   const updateMutation: MutationUpdaterFunction<
     createPhoto,
@@ -246,6 +246,13 @@ const UploadPhotoModal = ({
           seeFeed(prev) {
             return [newPhotoFragment, ...prev];
           },
+          seePhotosByUser(prev, { storeFieldName }) {
+            if (
+              storeFieldName ==
+              `seePhotosByUser:({"userId":${meData.seeMe?.id}})`
+            )
+              return [newPhotoFragment, ...prev];
+          },
         },
       });
       setIsPhotoCreated(true);
@@ -278,6 +285,7 @@ const UploadPhotoModal = ({
     setIsOpen(false);
     initSelected();
     setIsPhotoCreated(false);
+    reset();
   };
 
   useEffect(() => {

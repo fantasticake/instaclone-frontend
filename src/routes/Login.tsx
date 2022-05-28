@@ -38,6 +38,7 @@ const Form = styled.form`
   display: flex;
   flex-direction: column;
   justify-content: center;
+  gap: 14px;
   align-items: center;
 `;
 
