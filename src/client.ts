@@ -72,7 +72,17 @@ const client = new ApolloClient({
           seeComments: {
             keyArgs: ["photoId"],
             merge(existing = [], incoming) {
-              return [...existing, ...incoming];
+              const array = [...existing, ...incoming];
+              const uniqueArray = array.filter((value, index) => {
+                const _value = JSON.stringify(value);
+                return (
+                  index ===
+                  array.findIndex((obj) => {
+                    return JSON.stringify(obj) === _value;
+                  })
+                );
+              });
+              return uniqueArray;
             },
           },
         },
