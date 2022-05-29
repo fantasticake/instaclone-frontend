@@ -39,8 +39,8 @@ const wsLink = new GraphQLWsLink(
   createClient({
     url:
       process.env.NODE_ENV === "production"
-        ? "ws://cake-instaclone-backend.herokuapp.com/graphql"
-        : "wss://localhost:4000/graphql",
+        ? "wss://cake-instaclone-backend.herokuapp.com/graphql"
+        : "ws://localhost:4000/graphql",
     connectionParams: { token: tokenVar() },
   })
 );
