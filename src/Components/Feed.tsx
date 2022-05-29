@@ -82,7 +82,11 @@ const Button = styled.button`
 
 const CommentBtn = styled(Button)``;
 
-const DmBtn = styled(Button)``;
+const DmBtnContainer = styled.div`
+  :hover {
+    opacity: 0.7;
+  }
+`;
 
 const TotalLikes = styled.span`
   padding: 0 14px;
@@ -160,11 +164,11 @@ const Feed = (photo: seeFeed_seeFeed) => {
             <FontAwesomeIcon icon={faComment} />
           </CommentBtn>
         </Link>
-        <DmBtn>
+        <DmBtnContainer>
           <SendMessageBtn userId={photo.user.id}>
             <FontAwesomeIcon icon={faPaperPlane} />
           </SendMessageBtn>
-        </DmBtn>
+        </DmBtnContainer>
       </ControlBox>
       <TotalLikes>{formatNumber(photo.totalLikes, "like")}</TotalLikes>
       <CommentList>

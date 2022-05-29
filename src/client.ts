@@ -17,7 +17,12 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (networkError) console.log(`[Network error]: ${networkError}`);
 });
 
-const uploadLink = createUploadLink({ uri: "http://localhost:4000/graphql" });
+const uploadLink = createUploadLink({
+  uri:
+    process.env.NODE_ENV === "production"
+      ? "https://cake-instaclone-backend.herokuapp.com/graphql"
+      : " http://localhost:4000/graphql",
+});
 
 const authLink = setContext(({ operationName }, { headers }) => {
   const token = localStorage.getItem("token");
@@ -32,7 +37,10 @@ const authLink = setContext(({ operationName }, { headers }) => {
 
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: "ws://localhost:4000/graphql",
+    url:
+      process.env.NODE_ENV === "production"
+        ? "ws://cake-instaclone-backend.herokuapp.com/graphql"
+        : "ws://localhost:4000/graphql",
     connectionParams: { token: tokenVar() },
   })
 );

@@ -68,7 +68,11 @@ const Button = styled.button`
 
 const EditBtn = styled(Button)``;
 
-const MessageBtnContainer = styled(Button)``;
+const MessageBtnContainer = styled.div`
+  border: solid 2px ${(props) => props.theme.colors.faintLineColor};
+  padding: 4px 8px;
+  font-size: 14px;
+`;
 
 const TotalBox = styled.div`
   display: flex;

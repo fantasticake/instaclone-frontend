@@ -13,8 +13,6 @@ import { createRoom, createRoomVariables } from "../__generated__/createRoom";
 import { seeProfile, seeProfileVariables } from "../__generated__/seeProfile";
 
 const Button = styled.button`
-  margin: 0;
-  padding: 0;
   font-size: 100%;
 `;
 
@@ -116,6 +114,12 @@ const SendMessageBtn = ({
     }
   };
 
-  return <Button onClick={onMessageBtn}>{children}</Button>;
+  return meData?.seeMe ? (
+    <Button disabled={meData.seeMe.id == userId} onClick={onMessageBtn}>
+      {children}
+    </Button>
+  ) : (
+    <></>
+  );
 };
 export default SendMessageBtn;

@@ -130,7 +130,9 @@ const PaddingBox = styled.div`
   padding: 12px 14px;
 `;
 
-const ButtonBox = styled.div``;
+const ButtonBox = styled.div`
+  display: flex;
+`;
 
 const Button = styled.button`
   font-size: 22px;
@@ -138,7 +140,9 @@ const Button = styled.button`
 
 const CommentBtn = styled(Button)``;
 
-const DmBtn = styled(Button)``;
+const DmBtnContainer = styled.div`
+  font-size: 22px;
+`;
 
 const TotalLikes = styled.span`
   font-weight: 500;
@@ -290,11 +294,11 @@ const Post = () => {
                     <CommentBtn>
                       <FontAwesomeIcon icon={faComment} />
                     </CommentBtn>
-                    <DmBtn>
+                    <DmBtnContainer>
                       <SendMessageBtn userId={data.photoDetail.user.id}>
                         <FontAwesomeIcon icon={faPaperPlane} />
                       </SendMessageBtn>
-                    </DmBtn>
+                    </DmBtnContainer>
                   </ButtonBox>
                   <TotalLikes>
                     {formatNumber(data.photoDetail.totalLikes, "like")}
