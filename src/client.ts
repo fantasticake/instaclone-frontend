@@ -1,7 +1,11 @@
-import { ApolloClient, createHttpLink, InMemoryCache } from "@apollo/client";
+import { ApolloClient, InMemoryCache, split } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { createUploadLink } from "apollo-upload-client";
 import { onError } from "@apollo/client/link/error";
+import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
+import { createClient } from "graphql-ws";
+import { getMainDefinition } from "@apollo/client/utilities";
+import { tokenVar } from "./variables";
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors)
@@ -26,6 +30,26 @@ const authLink = setContext(({ operationName }, { headers }) => {
   };
 });
 
+const wsLink = new GraphQLWsLink(
+  createClient({
+    url: "ws://localhost:4000/graphql",
+    connectionParams: { token: tokenVar() },
+  })
+);
+
+const splitLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return (
+      definition.kind == "OperationDefinition" &&
+      definition.operation == "subscription"
+    );
+  },
+  wsLink,
+  /* @ts-ignore */
+  authLink.concat(errorLink).concat(uploadLink)
+);
+
 const client = new ApolloClient({
   cache: new InMemoryCache({
     typePolicies: {
@@ -47,8 +71,7 @@ const client = new ApolloClient({
       },
     },
   }),
-  /* @ts-ignore */
-  link: authLink.concat(errorLink).concat(uploadLink),
+  link: splitLink,
 });
 
 export default client;

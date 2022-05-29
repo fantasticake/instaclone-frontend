@@ -19,6 +19,7 @@
     "apollo": "^2.33.11",
     "apollo-upload-client": "^17.0.0",
     "graphql": "15.8.0",
+    "graphql-ws": "^5.8.2",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-hook-form": "^7.31.1",

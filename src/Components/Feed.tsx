@@ -16,6 +16,7 @@ import Comment from "./Comment";
 import CommentForm from "./CommentForm";
 import LikeBtn from "./LikeBtn";
 import PhotoSettingModal from "./modals/PhotoSettingModal";
+import SendMessageBtn from "./SendMessageBtn";
 
 const Container = styled.div`
   width: 400px;
@@ -160,7 +161,9 @@ const Feed = (photo: seeFeed_seeFeed) => {
           </CommentBtn>
         </Link>
         <DmBtn>
-          <FontAwesomeIcon icon={faPaperPlane} />
+          <SendMessageBtn userId={photo.user.id}>
+            <FontAwesomeIcon icon={faPaperPlane} />
+          </SendMessageBtn>
         </DmBtn>
       </ControlBox>
       <TotalLikes>{formatNumber(photo.totalLikes, "like")}</TotalLikes>

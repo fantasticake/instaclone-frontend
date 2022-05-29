@@ -12,6 +12,7 @@ import Header from "../Components/Header";
 import LikeBtn from "../Components/LikeBtn";
 import PhotoSettingModal from "../Components/modals/PhotoSettingModal";
 import PhotoGrid from "../Components/PhotoGrid";
+import SendMessageBtn from "../Components/SendMessageBtn";
 import { formatDate, formatNumber, getIsScrollEnd } from "../utils";
 import {
   photoDetailWithComments,
@@ -119,6 +120,7 @@ const ControlBox = styled.div`
   height: 160px;
   width: 356px;
   border-top: solid 2px ${(props) => props.theme.colors.faintLineColor};
+  border-bottom: solid 2px ${(props) => props.theme.colors.faintLineColor};
   box-sizing: border-box;
 `;
 
@@ -289,7 +291,9 @@ const Post = () => {
                       <FontAwesomeIcon icon={faComment} />
                     </CommentBtn>
                     <DmBtn>
-                      <FontAwesomeIcon icon={faPaperPlane} />
+                      <SendMessageBtn userId={data.photoDetail.user.id}>
+                        <FontAwesomeIcon icon={faPaperPlane} />
+                      </SendMessageBtn>
                     </DmBtn>
                   </ButtonBox>
                   <TotalLikes>

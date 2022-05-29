@@ -5,6 +5,7 @@ import Home from "../routes/Home";
 import Login from "../routes/Login";
 import Post from "../routes/Post";
 import Profile from "../routes/Profile";
+import Rooms from "../routes/Rooms";
 import SignUp from "../routes/SignUp";
 import { tokenVar } from "../variables";
 
@@ -20,6 +21,7 @@ const Router = () => {
         {token ? (
           <Route path="/accounts/edit" element={<EditProfile />}></Route>
         ) : null}
+        {token ? <Route path="/rooms" element={<Rooms />}></Route> : null}
       </Routes>
     </BrowserRouter>
   );

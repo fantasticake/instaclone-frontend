@@ -16,7 +16,7 @@ const BasicModal = ({
       style={{
         overlay: {
           zIndex: 1,
-          backgroundColor: theme.colors.blurryBackgroundColor,
+          backgroundColor: theme.colors.borderColor,
         },
         content: {
           top: "50%",

@@ -2,6 +2,7 @@ import {
   faMoon,
   faSun,
   faPlusSquare,
+  faPaperPlane,
 } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
@@ -63,6 +64,10 @@ const Button = styled.button`
   font-size: 24px;
 `;
 
+const MessageBtn = styled(Button)`
+  font-size: 22px;
+`;
+
 const CreateBtn = styled(Button)``;
 
 const ThemeBtn = styled(Button)``;
@@ -84,6 +89,11 @@ const Header = () => {
         </Column>
         <Column>
           <Buttons>
+            <Link to={"/rooms"}>
+              <MessageBtn>
+                <FontAwesomeIcon icon={faPaperPlane} />
+              </MessageBtn>
+            </Link>
             <CreateBtn onClick={() => setIsUploadOpen(true)}>
               <FontAwesomeIcon icon={faPlusSquare} />
             </CreateBtn>

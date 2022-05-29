@@ -20,8 +20,8 @@ export const lightTheme: DefaultTheme = {
     backgroundColor: "white",
     blurryBackgroundColor: "rgba(0, 0, 0, 0.02)",
     textColor: "black",
-    borderColor: "rgba(0, 0, 0, 0.7)",
-    focusedBorderColor: "rgba(0, 0, 0, 0.9)",
+    borderColor: "rgba(0, 0, 0, 0.5)",
+    focusedBorderColor: "rgba(0, 0, 0, 0.7)",
     faintLineColor: "rgba(0, 0, 0, 0.1)",
   },
 };

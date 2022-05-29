@@ -11,6 +11,7 @@ import {
   seeProfileWithPhotos,
   seeProfileWithPhotosVariables,
 } from "../__generated__/seeProfileWithPhotos";
+import SendMessageBtn from "../Components/SendMessageBtn";
 
 const Container = styled.div`
   display: flex;
@@ -67,7 +68,7 @@ const Button = styled.button`
 
 const EditBtn = styled(Button)``;
 
-const MessageBtn = styled(Button)``;
+const MessageBtnContainer = styled(Button)``;
 
 const TotalBox = styled.div`
   display: flex;
@@ -106,12 +107,14 @@ const Profile = () => {
   const meData = useMe();
   const { id } = useParams();
   const navigate = useNavigate();
+
   const { data } = useQuery<
     seeProfileWithPhotos,
     seeProfileWithPhotosVariables
   >(SEE_PROFILE_QUERY, {
     variables: { userId: parseInt(id || "0") },
   });
+
   return data ? (
     <Container>
       <Header />
@@ -128,7 +131,13 @@ const Profile = () => {
                   Edit Profile
                 </EditBtn>
               )}
-              {meData?.seeMe?.id != id && <MessageBtn>Message</MessageBtn>}
+              {meData?.seeMe?.id != id && (
+                <MessageBtnContainer>
+                  <SendMessageBtn userId={parseInt(id || "0")}>
+                    Message
+                  </SendMessageBtn>
+                </MessageBtnContainer>
+              )}
               {meData?.seeMe?.id != id && data.seeProfile && (
                 <FollowBtn
                   userId={parseInt(id || "0")}
