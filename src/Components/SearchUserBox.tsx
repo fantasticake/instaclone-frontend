@@ -8,6 +8,7 @@ import {
   searchUsersVariables,
 } from "../__generated__/searchUsers";
 import Avatar from "./Avatar";
+import Loading from "./Loading";
 
 const Container = styled.div`
   display: flex;
@@ -79,7 +80,7 @@ const SearchUserBox = () => {
   const meData = useMe();
   const [isListOpen, setIsListOpen] = useState(false);
   const UserListRef = useRef<any>();
-  const [searchUsersQuery, { data }] = useLazyQuery<
+  const [searchUsersQuery, { data, loading }] = useLazyQuery<
     searchUsers,
     searchUsersVariables
   >(SEARCH_USERS_QUERY);
@@ -109,25 +110,29 @@ const SearchUserBox = () => {
       />
       <UserListContainer isOpen={isListOpen} onClick={onClickContainer}>
         <UserList ref={UserListRef}>
-          {data?.searchUsers
-            ?.filter((user) => user && user.id != meData?.seeMe?.id)
-            .map(
-              (user) =>
-                user && (
-                  <Link
-                    onClick={onClickUser}
-                    key={user.id}
-                    to={`/users/${user.id}`}
-                  >
-                    <UserContainer>
-                      <AvatarContainer>
-                        <Avatar avatar={user.avatar} />
-                      </AvatarContainer>
-                      <Username>{user.username}</Username>
-                    </UserContainer>
-                  </Link>
-                )
-            )}
+          {loading ? (
+            <Loading />
+          ) : (
+            data?.searchUsers
+              ?.filter((user) => user && user.id != meData?.seeMe?.id)
+              .map(
+                (user) =>
+                  user && (
+                    <Link
+                      onClick={onClickUser}
+                      key={user.id}
+                      to={`/users/${user.id}`}
+                    >
+                      <UserContainer>
+                        <AvatarContainer>
+                          <Avatar avatar={user.avatar} />
+                        </AvatarContainer>
+                        <Username>{user.username}</Username>
+                      </UserContainer>
+                    </Link>
+                  )
+              )
+          )}
         </UserList>
       </UserListContainer>
     </Container>

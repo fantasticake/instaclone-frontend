@@ -111,7 +111,11 @@ const Login = () => {
             placeholder="Password"
             type={"password"}
           />
-          <FormButton onClick={handleSubmit(onSubmit)} disabled={!isValid}>
+          <FormButton
+            loading={loading}
+            onClick={handleSubmit(onSubmit)}
+            disabled={!isValid}
+          >
             Log In
           </FormButton>
         </Form>

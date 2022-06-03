@@ -260,6 +260,7 @@ const EditProfile = () => {
               </AvatarLabel>
               <SaveBtnContainer>
                 <FormButton
+                  loading={loading}
                   disabled={!selectedAvatarUrl}
                   onClick={handleSubmitAvatar(onValidAvatar)}
                 >
@@ -288,7 +289,11 @@ const EditProfile = () => {
           </InputBox>
           <BottomBtnBox>
             <SubmitBtnContainer>
-              <FormButton disabled={!isValid} onClick={handleSubmit(onValid)}>
+              <FormButton
+                loading={loading}
+                disabled={!isValid}
+                onClick={handleSubmit(onValid)}
+              >
                 Sumbit
               </FormButton>
             </SubmitBtnContainer>

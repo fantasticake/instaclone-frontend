@@ -1,11 +1,13 @@
 import { gql, useMutation } from "@apollo/client";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import styled from "styled-components";
+import styled, { useTheme } from "styled-components";
 import FormButton from "../Components/form/FormButton";
 import FormInput from "../Components/form/FormInput";
 import { signUp, signUpVariables } from "../__generated__/signUp";
 import Logo from "../Components/Logo";
+import Loading from "../Components/Loading";
+import { ClipLoader } from "react-spinners";
 
 const Container = styled.div`
   display: flex;
@@ -78,6 +80,7 @@ interface Inputs {
 }
 
 const SignUp = () => {
+  const theme = useTheme();
   const navigate = useNavigate();
   const {
     register,
@@ -131,7 +134,11 @@ const SignUp = () => {
             placeholder="Password Confirm"
             type={"password"}
           />
-          <FormButton onClick={handleSubmit(onSubmit)} disabled={!isValid}>
+          <FormButton
+            loading={loading}
+            onClick={handleSubmit(onSubmit)}
+            disabled={!isValid}
+          >
             Sign up
           </FormButton>
         </Form>

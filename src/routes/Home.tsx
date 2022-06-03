@@ -5,6 +5,7 @@ import { seeFeed, seeFeedVariables } from "../__generated__/seeFeed";
 import Feed from "../Components/Feed";
 import { useState } from "react";
 import { getIsScrollEnd } from "../utils";
+import Loading from "../Components/Loading";
 
 const Container = styled.div`
   height: 100vh;
@@ -40,7 +41,7 @@ const SEEFEED_QUERY = gql`
 
 const Home = () => {
   const [moreLoading, setMoreLoading] = useState(false);
-  const { data, fetchMore } = useQuery<seeFeed, seeFeedVariables>(
+  const { data, fetchMore, loading } = useQuery<seeFeed, seeFeedVariables>(
     SEEFEED_QUERY,
     { onCompleted: () => setMoreLoading(false) }
   );
@@ -57,12 +58,16 @@ const Home = () => {
   return (
     <Container onScroll={onScroll}>
       <Header />
-      {data && (
-        <FeedList>
-          {data.seeFeed?.map(
-            (photo) => photo && <Feed key={photo.id} {...photo} />
-          )}
-        </FeedList>
+      {loading ? (
+        <Loading />
+      ) : (
+        data && (
+          <FeedList>
+            {data.seeFeed?.map(
+              (photo) => photo && <Feed key={photo.id} {...photo} />
+            )}
+          </FeedList>
+        )
       )}
     </Container>
   );
