@@ -266,7 +266,7 @@ const UploadPhotoModal = ({
 
   const onValid: SubmitHandler<Inputs> = async ({ files: [file], caption }) => {
     if (!loading) {
-      createPhotoMutation({ variables: { file, caption } });
+      createPhotoMutation({ variables: { file: selectedPhoto, caption } });
     }
   };
 
