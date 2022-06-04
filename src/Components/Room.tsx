@@ -209,7 +209,7 @@ const Room = ({ roomId }: { roomId: number }) => {
         fields: {
           seeMessages(prev, { storeFieldName }) {
             if (storeFieldName == `seeMessages({"roomId":${roomId}})`) {
-              return [...prev, messageFragment];
+              return [messageFragment, ...prev];
             }
             return prev;
           },
@@ -247,8 +247,8 @@ const Room = ({ roomId }: { roomId: number }) => {
             return {
               ...prev,
               seeMessages: [
-                ...prev.seeMessages,
                 subscriptionData.data.roomUpdated,
+                ...prev.seeMessages,
               ],
             };
           }
@@ -281,22 +281,25 @@ const Room = ({ roomId }: { roomId: number }) => {
         </Link>
       </UserBox>
       <MessageList ref={MessageListRef}>
-        {data.seeMessages?.map(
-          (message) =>
-            meData?.seeMe && (
-              <MessageBox
-                isMine={message?.user.id == meData?.seeMe.id}
-                key={message?.id}
-              >
-                <MessageAvatarContainer to={`/users/${message?.user.id}`}>
-                  <Avatar avatar={message?.user.avatar} />
-                </MessageAvatarContainer>
-                <MessageColumn>
-                  <Payload>{message?.payload}</Payload>
-                </MessageColumn>
-              </MessageBox>
-            )
-        )}
+        {data.seeMessages
+          ?.slice()
+          .reverse()
+          .map(
+            (message) =>
+              meData?.seeMe && (
+                <MessageBox
+                  isMine={message?.user.id == meData?.seeMe.id}
+                  key={message?.id}
+                >
+                  <MessageAvatarContainer to={`/users/${message?.user.id}`}>
+                    <Avatar avatar={message?.user.avatar} />
+                  </MessageAvatarContainer>
+                  <MessageColumn>
+                    <Payload>{message?.payload}</Payload>
+                  </MessageColumn>
+                </MessageBox>
+              )
+          )}
       </MessageList>
       <InputContainer onSubmit={handleSubmit(onValid)}>
         <Input

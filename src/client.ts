@@ -21,7 +21,7 @@ const uploadLink = createUploadLink({
   uri:
     process.env.NODE_ENV === "production"
       ? "https://cake-instaclone-backend.herokuapp.com/graphql"
-      : " http://localhost:4000/graphql",
+      : "http://localhost:4000/graphql",
 });
 
 const authLink = setContext(({ operationName }, { headers }) => {
