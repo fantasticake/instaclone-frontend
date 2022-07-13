@@ -87,9 +87,8 @@ const Payload = styled.div`
 `;
 
 const InputContainer = styled.form`
-  position: absolute;
-  bottom: 0;
   display: flex;
+  background-color: transparent;
   justify-content: center;
   align-items: center;
   height: 80px;
@@ -99,13 +98,14 @@ const InputContainer = styled.form`
 const Input = styled.input`
   height: 38px;
   width: 500px;
+  max-width: 90%;
   border-radius: 15px;
   padding: 0 70px 0 16px;
 `;
 
 const SendBtn = styled.button`
   position: absolute;
-  right: 50px;
+  right: 10%;
   color: ${(props) => props.theme.colors.blue};
 `;
 

@@ -12,6 +12,16 @@ const Container = styled.div`
   overflow-y: auto;
 `;
 
+const HelpMessage = styled.div`
+  display: flex;
+  height: calc(100vh - var(--header-height));
+  justify-content: center;
+  align-items: center;
+  opacity: 0.8;
+  font-size: 24px;
+  font-weight: 600;
+`;
+
 const FeedList = styled.div`
   margin: 26px 0;
   display: flex;
@@ -60,14 +70,14 @@ const Home = () => {
       <Header />
       {loading ? (
         <Loading />
+      ) : data && data.seeFeed?.length ? (
+        <FeedList>
+          {data.seeFeed?.map(
+            (photo) => photo && <Feed key={photo.id} {...photo} />
+          )}
+        </FeedList>
       ) : (
-        data && (
-          <FeedList>
-            {data.seeFeed?.map(
-              (photo) => photo && <Feed key={photo.id} {...photo} />
-            )}
-          </FeedList>
-        )
+        <HelpMessage>Create posts or Follow users to see posts!</HelpMessage>
       )}
     </Container>
   );

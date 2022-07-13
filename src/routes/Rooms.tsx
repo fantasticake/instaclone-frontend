@@ -20,12 +20,17 @@ const Content = styled.div`
   display: flex;
   justify-content: center;
   height: 760px;
+  width: 920px;
+  max-width: 90%;
   margin-top: 20px;
   border: solid 1px ${(props) => props.theme.colors.faintLineColor};
 `;
 
 const RoomList = styled.div`
-  width: 340px;
+  width: 20%;
+  @media (min-width: 700px) {
+    width: 35%;
+  }
   overflow: auto;
   border-right: solid 1px ${(props) => props.theme.colors.faintLineColor};
   ::-webkit-scrollbar {
@@ -46,6 +51,11 @@ const Username = styled.span``;
 
 const RoomListElement = styled.button<{ isSelected: boolean }>`
   display: flex;
+  flex-direction: column;
+  @media (min-width: 700px) {
+    flex-direction: row;
+  }
+  gap: 10px;
   width: 100%;
   padding: 8px 18px;
   align-items: center;
@@ -67,7 +77,6 @@ const AvatarContainer = styled.div`
   font-size: 50px;
   border-radius: 25px;
   overflow: hidden;
-  margin-right: 10px;
 `;
 
 const RoomUsername = styled.span``;
@@ -78,7 +87,10 @@ const RoomContainer = styled.div`
   justify-content: center;
   align-items: center;
   gap: 20px;
-  width: 580px;
+  width: 80%;
+  @media (min-width: 700px) {
+    width: 65%;
+  }
 `;
 
 const IconContainer = styled.div`

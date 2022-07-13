@@ -23,7 +23,10 @@ const Avatar = ({ avatar }: { avatar: any }) => {
       {avatar && typeof avatar == "string" ? (
         <Img src={avatar} />
       ) : (
-        <FontAwesomeIcon icon={faUserCircle} />
+        <FontAwesomeIcon
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          icon={faUserCircle}
+        />
       )}
     </Container>
   );

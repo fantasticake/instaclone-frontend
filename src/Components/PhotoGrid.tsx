@@ -6,7 +6,9 @@ const Container = styled.div`
   width: 100%;
   display: grid;
   gap: 20px;
-  grid-template-columns: 1fr 1fr 1fr;
+  @media (min-width: 700px) {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
   border-top: solid 1px ${(props) => props.theme.colors.faintLineColor};
   padding-top: 46px;
   margin-bottom: 20px;

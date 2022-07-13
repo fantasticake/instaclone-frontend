@@ -10,7 +10,7 @@ export const darkTheme: DefaultTheme = {
     textColor: "white",
     borderColor: "rgba(255, 255, 255, 0.5)",
     focusedBorderColor: "rgba(255, 255, 255, 0.7)",
-    faintLineColor: "rgba(255, 255, 255, 0.1)",
+    faintLineColor: "rgba(255, 255, 255, 0.15)",
   },
 };
 

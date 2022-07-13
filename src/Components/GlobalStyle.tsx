@@ -3,6 +3,11 @@ import reset from "styled-reset";
 
 const GlobalStyle = createGlobalStyle`
     ${reset}
+
+    :root {
+        --header-height: 60px;
+    }
+
     body {
         background-color: ${(props) => props.theme.colors.backgroundColor};
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif

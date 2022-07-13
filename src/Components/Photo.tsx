@@ -1,6 +1,6 @@
 import { faComment, faHeart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
@@ -31,10 +31,8 @@ const TotalBox = styled.div`
   align-items: center;
   gap: 30px;
   position: absolute;
-  top: 50%;
-  bottom: 50%;
-  left: 50%;
-  right: 50%;
+  width: inherit;
+  height: inherit;
   opacity: 0;
   background-color: transparent;
   font-size: 18px;
@@ -64,6 +62,26 @@ const Photo = ({
 }) => {
   const [photoRatio, setPhotoRatio] = useState(1);
   const [loading, setLoading] = useState(true);
+  const containerRef = useRef<HTMLAnchorElement>(null);
+  const [photoWidth, setPhotoWidth] = useState<number>(300);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      setPhotoWidth(containerRef.current.clientWidth);
+      window.addEventListener("resize", () =>
+        containerRef.current
+          ? setPhotoWidth(containerRef.current.clientWidth)
+          : null
+      );
+      return () => {
+        window.removeEventListener("resize", () =>
+          containerRef.current
+            ? setPhotoWidth(containerRef.current.clientWidth)
+            : null
+        );
+      };
+    }
+  });
 
   useEffect(() => {
     const img = new Image();
@@ -81,7 +99,11 @@ const Photo = ({
   }, [url]);
 
   return loading ? null : (
-    <Container to={`/posts/${id}`} style={{ height: 300 * photoRatio }}>
+    <Container
+      ref={containerRef}
+      to={`/posts/${id}`}
+      style={{ height: photoWidth * photoRatio }}
+    >
       <Img src={url} />
       <TotalBox>
         <TotalLikes>

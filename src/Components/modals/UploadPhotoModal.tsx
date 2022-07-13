@@ -1,9 +1,8 @@
 import styled, { useTheme } from "styled-components";
 import useMe from "../../hooks/useMe";
 import Avatar from "../Avatar";
-import React from "react";
+import React, { useRef } from "react";
 import { useState } from "react";
-import { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage, faCheckCircle } from "@fortawesome/free-regular-svg-icons";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -23,7 +22,8 @@ import BeatLoader from "react-spinners/BeatLoader";
 import BasicModal from "./BasicModal";
 
 const Container = styled.div`
-  width: 760px;
+  width: 90%;
+  max-width: 760px;
   height: 460px;
   ::-webkit-scrollbar {
     display: none;
@@ -52,7 +52,7 @@ const Loading = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 410px;
+  height: calc(100% - 50px);
 `;
 
 const Completed = styled.div`
@@ -61,7 +61,7 @@ const Completed = styled.div`
   justify-content: center;
   align-items: center;
   gap: 20px;
-  height: 410px;
+  height: calc(100% - 50px);
 `;
 
 const CompletedText = styled.span`
@@ -99,25 +99,36 @@ const ShareBtn = styled.button`
 
 const FormBox = styled.div`
   display: flex;
-  height: 410px;
+  flex-direction: column;
+  height: calc(100% - 50px);
+  @media (min-width: 700px) {
+    flex-direction: row;
+  }
 `;
 
 const PhotoBox = styled.div`
-  width: 420px;
+  width: 100%;
+  @media (min-width: 700px) {
+    width: 60%;
+  }
   border-right: solid 1px ${(props) => props.theme.colors.faintLineColor};
-  box-sizing: content-box;
+  border-bottom: solid 1px ${(props) => props.theme.colors.faintLineColor};
 `;
 
 const PhotoInputBox = styled.div<{ isSelected: boolean }>`
+  position: relative;
   ${(props) => (props.isSelected ? "display:none;" : null)}
-  width: 420px;
-  height: 90%;
+  width: 100%;
+  height: 240px;
+  @media (min-width: 700px) {
+    height: 100%;
+  }
 `;
 
 const PhotoInput = styled.input`
   position: absolute;
-  width: 420px;
-  height: 410px;
+  width: 100%;
+  height: 100%;
   opacity: 0;
   cursor: pointer;
   ::-webkit-file-upload-button {
@@ -141,12 +152,20 @@ const Photo = styled.img`
   object-position: top right;
 `;
 
-const TextBox = styled.div``;
+const TextBox = styled.div`
+  width: 100%;
+  @media (min-width: 700px) {
+    width: 40%;
+  }
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+`;
 
 const UserBox = styled.div`
   display: flex;
   align-items: center;
-  padding: 20px;
+  padding: 14px 20px;
 `;
 
 const AvatarContainer = styled.div`
@@ -162,14 +181,17 @@ const Username = styled.span`
 `;
 
 const Caption = styled.textarea`
-  padding: 0 20px;
-  height: 300px;
-  width: 330px;
+  padding: 10px 20px;
+  height: 100%;
+  width: 100%;
   border: none;
   outline: none;
   resize: none;
   font-size: 16px;
   line-height: 26px;
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const CREATE_PHOTO_MUTATION = gql`
@@ -183,7 +205,6 @@ const CREATE_PHOTO_MUTATION = gql`
 `;
 
 interface Inputs {
-  files: File[];
   caption: string;
 }
 
@@ -196,10 +217,10 @@ const UploadPhotoModal = ({
 }) => {
   const meData = useMe();
   const theme = useTheme();
-  const [selectedPhoto, setSelectedPhoto] = useState<Blob | MediaSource>();
   const [loadedPhoto, setLoadedPhoto] = useState("");
   const [isPhotoCreated, setIsPhotoCreated] = useState(false);
   const { register, handleSubmit, getValues, reset } = useForm<Inputs>();
+  const photoInputRef = useRef<HTMLInputElement>(null);
 
   const updateMutation: MutationUpdaterFunction<
     createPhoto,
@@ -248,7 +269,7 @@ const UploadPhotoModal = ({
           },
           seePhotosByUser(prev, { storeFieldName }) {
             if (
-              storeFieldName ==
+              storeFieldName ===
               `seePhotosByUser:({"userId":${meData.seeMe?.id}})`
             )
               return [newPhotoFragment, ...prev];
@@ -264,20 +285,22 @@ const UploadPhotoModal = ({
     createPhotoVariables
   >(CREATE_PHOTO_MUTATION, { update: updateMutation });
 
-  const onValid: SubmitHandler<Inputs> = async ({ files: [file], caption }) => {
-    if (!loading) {
-      createPhotoMutation({ variables: { file: selectedPhoto, caption } });
+  const onValid: SubmitHandler<Inputs> = async ({ caption }) => {
+    const files = photoInputRef.current?.files;
+    if (!loading && files && files.length) {
+      createPhotoMutation({ variables: { file: files[0], caption } });
     }
   };
 
-  const onSelectPhoto = (e: any) => {
-    if (!e.target.files || e.target.files.length == 0)
-      setSelectedPhoto(undefined);
-    else setSelectedPhoto(e.target.files[0]);
+  const onSelectPhoto: React.ChangeEventHandler<HTMLInputElement> = () => {
+    const files = photoInputRef.current?.files;
+    if (files?.length) {
+      const photoUrl = URL.createObjectURL(files[0]);
+      setLoadedPhoto(photoUrl);
+    }
   };
 
   const initSelected = () => {
-    setSelectedPhoto(undefined);
     setLoadedPhoto("");
   };
 
@@ -287,15 +310,6 @@ const UploadPhotoModal = ({
     setIsPhotoCreated(false);
     reset();
   };
-
-  useEffect(() => {
-    if (typeof selectedPhoto == "undefined") {
-      setLoadedPhoto("");
-    } else {
-      const photoUrl = URL.createObjectURL(selectedPhoto);
-      setLoadedPhoto(photoUrl);
-    }
-  }, [selectedPhoto]);
 
   return (
     <BasicModal
@@ -314,11 +328,11 @@ const UploadPhotoModal = ({
               </ModalHeader>
               <FormBox>
                 <PhotoBox>
-                  <PhotoInputBox isSelected={Boolean(selectedPhoto)}>
+                  <PhotoInputBox isSelected={Boolean(loadedPhoto)}>
                     <PhotoInput
-                      {...register("files", { required: true })}
+                      ref={photoInputRef}
                       id="photoInput"
-                      onChange={onSelectPhoto}
+                      onInput={onSelectPhoto}
                       type="file"
                       accept="image/*"
                     />

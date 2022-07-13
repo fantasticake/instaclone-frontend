@@ -1,13 +1,12 @@
 import { gql, useMutation } from "@apollo/client";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import styled, { useTheme } from "styled-components";
+import styled from "styled-components";
 import FormButton from "../Components/form/FormButton";
 import FormInput from "../Components/form/FormInput";
 import { signUp, signUpVariables } from "../__generated__/signUp";
 import Logo from "../Components/Logo";
-import Loading from "../Components/Loading";
-import { ClipLoader } from "react-spinners";
+import FormError from "../Components/form/FormError";
 
 const Container = styled.div`
   display: flex;
@@ -18,10 +17,8 @@ const Container = styled.div`
 `;
 
 const SignupBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  display: grid;
+  gap: 10px;
   padding: 20px;
   width: 280px;
   border: solid 3px ${(props) => props.theme.colors.borderColor};
@@ -31,7 +28,7 @@ const SignupBox = styled.div`
 
 const LogoBox = styled.div`
   width: 190px;
-  margin: 26px 0;
+  margin: 16px auto;
 `;
 
 const MainText = styled.span`
@@ -47,7 +44,7 @@ const Form = styled.form`
   justify-content: center;
   align-items: center;
   gap: 14px;
-  margin-top: 26px;
+  margin-top: 16px;
 `;
 
 const SubBox = styled.div`
@@ -80,17 +77,18 @@ interface Inputs {
 }
 
 const SignUp = () => {
-  const theme = useTheme();
   const navigate = useNavigate();
   const {
     register,
     handleSubmit,
-    formState: { isValid },
+    watch,
+    formState: { isValid, errors },
   } = useForm<Inputs>({ mode: "onChange" });
 
-  const [signUpMutation, { loading }] = useMutation<signUp, signUpVariables>(
-    SIGNUP_MUTATION
-  );
+  const [signUpMutation, { loading, data, error }] = useMutation<
+    signUp,
+    signUpVariables
+  >(SIGNUP_MUTATION);
 
   const onSubmit: SubmitHandler<Inputs> = async ({
     username,
@@ -98,7 +96,7 @@ const SignUp = () => {
     password,
     passwordConfirm,
   }) => {
-    if (password == passwordConfirm && !loading) {
+    if (password === passwordConfirm && !loading) {
       const { data } = await signUpMutation({
         variables: { username, email, password },
       });
@@ -121,9 +119,15 @@ const SignUp = () => {
             placeholder="Username"
           />
           <FormInput
-            {...register("email", { required: true })}
+            {...register("email", {
+              required: true,
+              pattern: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+            })}
             placeholder="Email"
           />
+          {errors.email?.type === "pattern" && (
+            <FormError message="Email not valid" />
+          )}
           <FormInput
             {...register("password", { required: true })}
             placeholder="Password"
@@ -134,6 +138,9 @@ const SignUp = () => {
             placeholder="Password Confirm"
             type={"password"}
           />
+          {watch("password") !== watch("passwordConfirm") && (
+            <FormError message="Password does not match" />
+          )}
           <FormButton
             loading={loading}
             onClick={handleSubmit(onSubmit)}
@@ -142,6 +149,8 @@ const SignUp = () => {
             Sign up
           </FormButton>
         </Form>
+        {error && <FormError message="Server error: Please try again" />}
+        {data?.signUp.error && <FormError message={data.signUp.error} />}
       </SignupBox>
       <SubBox>
         Have an account? <SLink to={"/"}> Log in</SLink>

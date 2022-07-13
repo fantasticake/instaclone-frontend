@@ -172,11 +172,13 @@ const Feed = (photo: seeFeed_seeFeed) => {
       </ControlBox>
       <TotalLikes>{formatNumber(photo.totalLikes, "like")}</TotalLikes>
       <CommentList>
-        <Comment
-          userId={photo.user.id}
-          username={photo.user.username}
-          payload={photo.caption || ""}
-        />
+        {photo.caption && (
+          <Comment
+            userId={photo.user.id}
+            username={photo.user.username}
+            payload={photo.caption}
+          />
+        )}
         <Link to={`/posts/${photo.id}`}>
           <TotalComments>
             View all {formatNumber(photo.totalComments, "comment")}

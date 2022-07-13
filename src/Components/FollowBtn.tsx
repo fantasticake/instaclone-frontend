@@ -60,6 +60,7 @@ const FollowBtn = ({
           },
         },
       });
+      cache.evict({ id: "ROOT_QUERY", fieldName: "seeFeed" });
     }
   };
 
@@ -81,6 +82,7 @@ const FollowBtn = ({
           },
         },
       });
+      cache.evict({ id: "ROOT_QUERY", fieldName: "seeFeed" });
     }
   };
 

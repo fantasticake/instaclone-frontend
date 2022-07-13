@@ -41,25 +41,35 @@ const Content = styled.div`
 
 const Detail = styled.div`
   display: flex;
-  height: 600px;
+  flex-direction: column;
+  width: 100%;
+  @media (min-width: 700px) {
+    flex-direction: row;
+    justify-content: center;
+    height: calc(86vh - var(--header-height));
+  }
   margin-bottom: 50px;
 `;
 
 const Photo = styled.img`
-  height: 100%;
-  max-width: 60%;
+  @media (min-width: 700px) {
+    height: calc(86vh - var(--header-height));
+    max-width: 65%;
+  }
   object-fit: contain;
-  object-position: top right bottom;
+  object-position: right;
 `;
 
 const CommentBox = styled.div`
-  width: 360px;
+  display: grid;
+  @media (min-width: 700px) {
+    width: 35%;
+    grid-template-rows: 60px 1fr 160px;
+  }
   border: solid 2px ${(props) => props.theme.colors.faintLineColor};
 `;
 
 const OwnerBox = styled.div`
-  position: sticky;
-  top: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -90,7 +100,8 @@ const Username = styled(Link)`
 const SettingBtn = styled.button``;
 
 const CommentList = styled.div`
-  height: 380px;
+  height: auto;
+  max-height: 450px;
   overflow-y: scroll;
   ::-webkit-scrollbar {
     display: none;
@@ -105,7 +116,7 @@ const CommentContainer = styled.div`
 
 const Comment = styled.div`
   margin-top: 2px;
-  width: 280px;
+  width: 50%;
 `;
 
 const Caption = styled.span``;
@@ -113,12 +124,12 @@ const Caption = styled.span``;
 const Payload = styled.span``;
 
 const ControlBox = styled.div`
-  position: sticky;
+  bottom: 0;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 160px;
-  width: 356px;
+  width: 100%;
   border-top: solid 2px ${(props) => props.theme.colors.faintLineColor};
   border-bottom: solid 2px ${(props) => props.theme.colors.faintLineColor};
   box-sizing: border-box;
@@ -259,17 +270,19 @@ const Post = () => {
                 </SettingBtn>
               </OwnerBox>
               <CommentList onScroll={onScrollComments}>
-                <CommentContainer>
-                  <AvatarContainer to={`/users/${data.photoDetail.user.id}`}>
-                    <Avatar avatar={data.photoDetail.user.avatar} />
-                  </AvatarContainer>
-                  <Comment>
-                    <Username to={`/users/${data.photoDetail.user.id}`}>
-                      {data.photoDetail.user.username}
-                    </Username>
-                    <Caption>{data.photoDetail.caption}</Caption>
-                  </Comment>
-                </CommentContainer>
+                {data.photoDetail.caption && (
+                  <CommentContainer>
+                    <AvatarContainer to={`/users/${data.photoDetail.user.id}`}>
+                      <Avatar avatar={data.photoDetail.user.avatar} />
+                    </AvatarContainer>
+                    <Comment>
+                      <Username to={`/users/${data.photoDetail.user.id}`}>
+                        {data.photoDetail.user.username}
+                      </Username>
+                      <Caption>{data.photoDetail.caption}</Caption>
+                    </Comment>
+                  </CommentContainer>
+                )}
                 {data.seeComments?.map((comment) => (
                   <CommentContainer key={comment?.id}>
                     <AvatarContainer to={`/users/${comment?.user.id}`}>
@@ -315,9 +328,9 @@ const Post = () => {
         {photosData?.seePhotosByUser && (
           <PhotoBox>
             <PhotoGrid
-              photos={photosData.seePhotosByUser.filter((photo) => {
-                if (photo) return photo.id + "" != photoId;
-              })}
+              photos={photosData.seePhotosByUser.filter(
+                (photo) => photo?.id + "" !== photoId
+              )}
             />
           </PhotoBox>
         )}

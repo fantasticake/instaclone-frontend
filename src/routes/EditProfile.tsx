@@ -29,21 +29,26 @@ const Container = styled.div`
 const Content = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  width: 920px;
+  align-items: center;
+  width: 90%;
+  max-width: 920px;
   margin-top: 30px;
   border: solid 1px ${(props) => props.theme.colors.faintLineColor};
   padding: 30px 0;
-  padding-left: 180px;
 `;
 
 const UserBox = styled.div`
   display: flex;
+  justify-content: center;
   align-items: center;
+  width: 100%;
 `;
 
 const LabelBox = styled.div`
-  width: 200px;
+  width: 90px;
+  @media (min-width: 700px) {
+    width: 200px;
+  }
   margin-right: 30px;
   display: flex;
   justify-content: flex-end;
@@ -58,7 +63,12 @@ const AvatarContainer = styled.div`
   overflow: hidden;
 `;
 
-const UserBoxColumn = styled.div``;
+const UserBoxColumn = styled.div`
+  width: 260px;
+  @media (min-width: 700px) {
+    width: 360px;
+  }
+`;
 
 const Username = styled.div``;
 
@@ -101,7 +111,10 @@ const InputBox = styled.div`
 `;
 
 const InputContainer = styled.div`
-  width: 360px;
+  width: 260px;
+  @media (min-width: 700px) {
+    width: 360px;
+  }
   input {
     height: 36px;
     padding: 0 8px;
@@ -119,12 +132,24 @@ const BottomBtnBox = styled.div`
 
 const SubmitBtnContainer = styled.div`
   display: flex;
+  justify-content: flex-end;
   align-items: center;
+  width: 90px;
+  @media (min-width: 700px) {
+    width: 200px;
+  }
   height: 100%;
   button {
     width: 70px;
   }
   margin-right: 20px;
+`;
+
+const DeleteAccountBtnContainer = styled.div`
+  width: 260px;
+  @media (min-width: 700px) {
+    width: 360px;
+  }
 `;
 
 interface Inputs {
@@ -220,7 +245,7 @@ const EditProfile = () => {
   };
 
   const onSelectAvatar = (e: any) => {
-    if (e.target.files && e.target.files.length != 0) {
+    if (e.target.files && e.target.files.length !== 0) {
       const url = URL.createObjectURL(e.target.files[0]);
       setSelectedAvatarUrl(url);
     }
@@ -297,7 +322,9 @@ const EditProfile = () => {
                 Sumbit
               </FormButton>
             </SubmitBtnContainer>
-            <DeleteAccountBtn />
+            <DeleteAccountBtnContainer>
+              <DeleteAccountBtn />
+            </DeleteAccountBtnContainer>
           </BottomBtnBox>
         </Form>
       </Content>

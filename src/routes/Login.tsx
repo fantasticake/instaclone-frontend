@@ -3,6 +3,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import FormButton from "../Components/form/FormButton";
+import FormError from "../Components/form/FormError";
 import FormInput from "../Components/form/FormInput";
 import Logo from "../Components/Logo";
 import { setLogin } from "../variables";
@@ -17,10 +18,8 @@ const Container = styled.div`
 `;
 
 const LoginBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  display: grid;
+  gap: 10px;
   padding: 20px;
   width: 280px;
   border: solid 3px ${(props) => props.theme.colors.borderColor};
@@ -30,7 +29,7 @@ const LoginBox = styled.div`
 
 const LogoBox = styled.div`
   width: 190px;
-  margin: 26px 0;
+  margin: 16px auto;
 `;
 
 const Form = styled.form`
@@ -78,9 +77,10 @@ const Login = () => {
     formState: { isValid },
   } = useForm<Inputs>({ mode: "onChange" });
 
-  const [loginMutation, { loading }] = useMutation<login, loginVariables>(
-    LOGIN_MUTATION
-  );
+  const [loginMutation, { data, loading, error }] = useMutation<
+    login,
+    loginVariables
+  >(LOGIN_MUTATION);
 
   const onSubmit: SubmitHandler<Inputs> = async ({ username, password }) => {
     if (!loading) {
@@ -119,6 +119,8 @@ const Login = () => {
             Log In
           </FormButton>
         </Form>
+        {data?.login.error && <FormError message={data.login.error} />}
+        {error && <FormError message="Server error: Please try again" />}
       </LoginBox>
       <SubBox>
         Don't have an account? <SLink to={"/signup"}> Sign up</SLink>

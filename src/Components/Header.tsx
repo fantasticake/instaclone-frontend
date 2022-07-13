@@ -10,7 +10,6 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import useMe from "../hooks/useMe";
 import { themeVar, toggleTheme } from "../variables";
-import Avatar from "./Avatar";
 import Logo from "./Logo";
 import UploadPhotoModal from "./modals/UploadPhotoModal";
 import ProfileBtn from "./ProfileBtn";
@@ -24,13 +23,13 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   border-bottom: solid 1px ${(props) => props.theme.colors.faintLineColor};
-  height: 60px;
+  height: var(--header-height);
   width: 100%;
 `;
 
 const Content = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 10fr 1fr 10fr;
   width: 920px;
   max-width: 90%;
 `;
@@ -40,6 +39,7 @@ const Column = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100%;
 `;
 
 const LogoBox = styled(Link)`
@@ -51,10 +51,11 @@ const LogoBox = styled(Link)`
 const Buttons = styled.div`
   align-self: flex-end;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   height: 100%;
-  gap: 20px;
+  width: 96%;
+  max-width: 220px;
 `;
 
 const Button = styled.button`
@@ -98,7 +99,7 @@ const Header = () => {
               <FontAwesomeIcon icon={faPlusSquare} />
             </CreateBtn>
             <ThemeBtn onClick={toggleTheme}>
-              <FontAwesomeIcon icon={themeVar() == "light" ? faMoon : faSun} />
+              <FontAwesomeIcon icon={themeVar() === "light" ? faMoon : faSun} />
             </ThemeBtn>
             <ProfileBtn />
           </Buttons>

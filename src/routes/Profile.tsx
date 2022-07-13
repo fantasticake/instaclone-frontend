@@ -37,11 +37,17 @@ const UserBox = styled.div`
 `;
 
 const AvatarContainer = styled.div`
-  width: 140px;
-  height: 140px;
-  border-radius: 70px;
+  width: 80px;
+  height: 80px;
+  border-radius: 40px;
+  margin-right: 30px;
+  @media (min-width: 700px) {
+    width: 140px;
+    height: 140px;
+    border-radius: 70px;
+    margin-right: 100px;
+  }
   overflow: hidden;
-  margin-right: 100px;
   font-size: 150px;
 `;
 
@@ -77,8 +83,11 @@ const MessageBtnContainer = styled.div`
 const TotalBox = styled.div`
   display: flex;
   justify-content: center;
-  gap: 50px;
+  gap: 30px;
   margin-top: 30px;
+  @media (min-width: 700px) {
+    gap: 50px;
+  }
 `;
 
 const TotalPosts = styled.span``;
@@ -130,19 +139,19 @@ const Profile = () => {
           <InfoBox>
             <ControlBox>
               <Username>{data?.seeProfile?.username}</Username>
-              {meData?.seeMe?.id == id && (
+              {meData?.seeMe?.id + "" === id && (
                 <EditBtn onClick={() => navigate("/accounts/edit")}>
                   Edit Profile
                 </EditBtn>
               )}
-              {meData?.seeMe?.id != id && (
+              {meData?.seeMe?.id + "" !== id && (
                 <MessageBtnContainer>
                   <SendMessageBtn userId={parseInt(id || "0")}>
                     Message
                   </SendMessageBtn>
                 </MessageBtnContainer>
               )}
-              {meData?.seeMe?.id != id && data.seeProfile && (
+              {meData?.seeMe?.id + "" !== id && data.seeProfile && (
                 <FollowBtn
                   userId={parseInt(id || "0")}
                   isFollowing={data.seeProfile?.isFollowing}

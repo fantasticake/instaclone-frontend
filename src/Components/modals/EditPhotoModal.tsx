@@ -19,7 +19,8 @@ import {
 } from "../../__generated__/photoDetail";
 
 const Container = styled.div`
-  width: 760px;
+  width: 90%;
+  max-width: 760px;
   height: 460px;
   ::-webkit-scrollbar {
     display: none;
@@ -64,12 +65,16 @@ const DoneBtn = styled.button`
 `;
 
 const FormBox = styled.div`
-  display: flex;
-  height: 410px;
+  display: grid;
+  height: calc(100% - 50px);
+  @media (min-width: 700px) {
+    grid-template-columns: 3fr 2fr;
+  }
 `;
 
 const PhotoBox = styled.div`
-  width: 420px;
+  width: 100%;
+  height: 100%;
   border-right: solid 1px ${(props) => props.theme.colors.faintLineColor};
   box-sizing: content-box;
 `;
@@ -80,12 +85,17 @@ const Photo = styled.img`
   object-position: top right;
 `;
 
-const TextBox = styled.div``;
+const TextBox = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+`;
 
 const UserBox = styled.div`
   display: flex;
   align-items: center;
-  padding: 20px;
+  padding: 14px 20px;
 `;
 
 const AvatarContainer = styled.div`
@@ -102,14 +112,17 @@ const Username = styled.span`
 `;
 
 const Caption = styled.textarea`
-  padding: 0 20px;
-  height: 300px;
-  width: 330px;
+  padding: 10px 20px;
+  height: 100%;
+  width: 100%;
   border: none;
   outline: none;
   resize: none;
   font-size: 16px;
   line-height: 26px;
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const PHOTO_DETAIL = gql`
@@ -191,9 +204,9 @@ const EditPhotoModal = ({
         <Container {...props}>
           <ModalHeader>
             <CancelBtnContainer>
-              <CancelBtn>Cancel</CancelBtn>
+              <CancelBtn onClick={onClose}>Cancel</CancelBtn>
             </CancelBtnContainer>
-            <HeaderTitle>Create new post</HeaderTitle>
+            <HeaderTitle>Edit post</HeaderTitle>
             <DoneBtnContainer>
               <DoneBtn onClick={handleSubmit(onValid)}>Done</DoneBtn>
             </DoneBtnContainer>
